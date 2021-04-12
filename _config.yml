@@ -102,8 +102,9 @@ theme: next
 # Deployment
 ## Docs: https://hexo.io/docs/one-command-deployment
 deploy:
-  type: git
-  repo: https://github.com/Jiezhi/jiezhi.github.io
+  type: ''
+  # type: git
+  # repo: https://github.com/Jiezhi/jiezhi.github.io
 
 algolia:
   appId: "P6Q7E1IAYR"
