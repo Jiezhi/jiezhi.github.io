@@ -261,7 +261,7 @@ tag_icon: false
 # Front-matter variable (unsupport animation).
 reward_settings:
   # If true, reward will be displayed in every article by default.
-  enable: false
+  enable: true
   animation: false
   #comment: Donate comment here.
 
@@ -295,8 +295,9 @@ related_posts:
 # Post edit
 # Dependencies: https://github.com/hexojs/hexo-deployer-git
 post_edit:
-  enable: false
-  url: https://github.com/jiezhi/repo-name/tree/branch-name/subdirectory-name # Link for view source
+  enable: true
+  url: https://github.com/Jiezhi/jiezhi.github.io/tree/source/source/_posts
+  # url: https://github.com/jiezhi/repo-name/tree/branch-name/subdirectory-name # Link for view source
   #url: https://github.com/user-name/repo-name/edit/branch-name/subdirectory-name # Link for fork & edit
 
 # Show previous post and next post in post footer if exists
@@ -525,7 +526,7 @@ mediumzoom: false
 
 # Vanilla JavaScript plugin for lazyloading images.
 # For more information: https://github.com/ApoorvSaxena/lozad.js
-lazyload: true
+lazyload: false
 
 # Pangu Support
 # For more information: https://github.com/vinta/pangu.js
@@ -863,7 +864,7 @@ three:
 # Dependencies: https://github.com/theme-next/theme-next-canvas-ribbon
 # For more information: https://github.com/zproo/canvas-ribbon
 canvas_ribbon:
-  enable: true
+  enable: false
   size: 300 # The width of the ribbon
   alpha: 0.6 # The transparency of the ribbon
   zIndex: -1 # The display level of the ribbon
