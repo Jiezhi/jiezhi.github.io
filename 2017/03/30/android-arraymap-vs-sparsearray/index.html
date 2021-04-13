@@ -17,7 +17,7 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"jiezhi.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"apiKey":"778170cba39be8aded6d4bb919ee084f","indexName":"Jiezhi Blog","hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+    var CONFIG = {"hostname":"jiezhi.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"algolia":{"apiKey":"778170cba39be8aded6d4bb919ee084f","indexName":"Jiezhi Blog","hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
   <meta name="description" content="为了提高Android应用程序的性能，Android系统提供了专门为移动开发而设计的集合。">
@@ -32,7 +32,7 @@
 <meta property="og:image" content="https://cdn-images-1.medium.com/max/800/1*7FOi8twIY2LmDCpM-rOtwg.png">
 <meta property="og:image" content="https://youtu.be/ORgucLTtTDI">
 <meta property="article:published_time" content="2017-03-30T21:02:58.000Z">
-<meta property="article:modified_time" content="2021-04-13T08:33:13.617Z">
+<meta property="article:modified_time" content="2021-04-13T10:10:04.443Z">
 <meta property="article:author" content="Jiezhi">
 <meta property="article:tag" content="android">
 <meta name="twitter:card" content="summary">
@@ -53,6 +53,15 @@
 
   <title>android中的ArrayMap和SparseArray | Jiezhi's Blog</title>
   
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-67636901-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-67636901-1');
+      }
+    </script>
 
 
 
@@ -154,6 +163,8 @@
     <span>0%</span>
   </div>
 
+  <a href="https://github.com/jiezhi" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
 
     <main class="main">
       <div class="main-inner">
@@ -197,7 +208,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-04-13 08:33:13" itemprop="dateModified" datetime="2021-04-13T08:33:13+00:00">2021-04-13</time>
+                <time title="Modified: 2021-04-13 10:10:04" itemprop="dateModified" datetime="2021-04-13T10:10:04+00:00">2021-04-13</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -210,6 +221,36 @@
             </span>
 
           
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Changyan: </span>
+    
+    
+      <a title="changyan" href="/2017/03/30/android-arraymap-vs-sparsearray/#SOHUCS" itemprop="discussionUrl">
+        <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="2017/03/30/android-arraymap-vs-sparsearray/" itemprop="commentCount"></span>
+      </a>
+    
+  </span>
+  
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2017/03/30/android-arraymap-vs-sparsearray/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/03/30/android-arraymap-vs-sparsearray/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
 
         </div>
       </header>
@@ -229,12 +270,12 @@
 <p>当键值对被插入到HashMap中时，会计算出该键的hashCode，并将该值分配给EntryClass的hashCode变量。 通过该hashCode，我们可以获取该键值对在存储池中的索引。 如果存储池中已经存在了键值对，则将插入新的键值对，并把最后一个键值对指向这个新的键值对，这使得存储池成为一个链接列表。</p>
 <p>从数组中检索值的时间效率为恒定时间或O(1)。 这意味着不管数组的大小，拉取数组中的任何元素时间都相同。 这可以通过使用散列函数来生成指定键的数组索引。</p>
 <p>HashMap用于将整数键映射到对象。</p>
-<p><img src="https://cdn-images-1.medium.com/max/800/1*lXkll8fb72OFk5NVVbi_wQ.png"></p>
+<p><img data-src="https://cdn-images-1.medium.com/max/800/1*lXkll8fb72OFk5NVVbi_wQ.png"></p>
 <p>以下是创建HashMap和获取键和值的示例代码：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">HashMap&lt; String, String&gt; map = <span class="keyword">new</span> HashMap&lt; String, String&gt;();</span><br><span class="line">map.put(“Key1”, <span class="string">&quot;Value1&quot;</span>);</span><br><span class="line">map.put(“Key2”, <span class="string">&quot; Value2&quot;</span>);</span><br><span class="line">map.put(“Key3”, <span class="string">&quot; Value3&quot;</span>);</span><br><span class="line"></span><br><span class="line">Set set = hmap.entrySet();</span><br><span class="line">Iterator iterator = set.iterator();</span><br><span class="line"></span><br><span class="line"><span class="comment">// Iterate over HashMap</span></span><br><span class="line"><span class="keyword">while</span>(iterator.hasNext()) &#123;</span><br><span class="line">    Map.Entry mEntry = (Map.Entry)iterator.next();</span><br><span class="line">    String key = mEntry.getKey();</span><br><span class="line">    String value = mEntry.getValue();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <h2 id="ArrayMap原理"><a href="#ArrayMap原理" class="headerlink" title="ArrayMap原理"></a>ArrayMap原理</h2><p>不像HashMap中包含一个数组，ArrayMap中包含了两个小数组。 第一个数组（Hash-Array）按顺序包含指定的哈希键。 第二个数组（Key Value Array）根据第一个数组存储对象的键和值。</p>
-<p>当我们搜索其中的内容时，将会在Hash-Array上完成二分查找，通过找到的哈希索引，然后直接从第二个数组（Key Value Array）返回键值对。 如果第二个数组（Key Value Array）中的键不匹配，则通过第二个数组（Key Value Array）完成线性遍历来解决冲突。<br><img src="https://cdn-images-1.medium.com/max/800/1*v1_3ug_tpscGtYc7JxP2Og.png"></p>
+<p>当我们搜索其中的内容时，将会在Hash-Array上完成二分查找，通过找到的哈希索引，然后直接从第二个数组（Key Value Array）返回键值对。 如果第二个数组（Key Value Array）中的键不匹配，则通过第二个数组（Key Value Array）完成线性遍历来解决冲突。<br><img data-src="https://cdn-images-1.medium.com/max/800/1*v1_3ug_tpscGtYc7JxP2Og.png"></p>
 <p>以下是创建ArrayMap和获取键和值的示例代码：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">ArrayMap&lt;String, String&gt; arrayMap = <span class="keyword">new</span> ArrayMap&lt;&gt;();</span><br><span class="line">arrayMap.put(“Key1”, “Value1”);</span><br><span class="line">arrayMap.put(“Key2”, “Value2”);</span><br><span class="line">arrayMap.put(“Key3”, “Value3”);</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; arrayMap.size(); i++) &#123;</span><br><span class="line">    String key = arrayMap.keyAt(i);</span><br><span class="line">    String value = arrayMap.valueAt(i);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -245,7 +286,7 @@
 <p>该类在API 1中已经存在了，但在API 11中经过了重新设计。兼容库中的更新版本的SparseArrayCompat也可用于较旧设备。</p>
 <p>还有几种其他类型的SparseArray：</p>
 <p><em>LongSparseArray，SparseIntArray，SparseBooleanArray</em>等<br>HashMap可以被以下的Array类替换：</p>
-<p><img src="https://cdn-images-1.medium.com/max/800/1*7FOi8twIY2LmDCpM-rOtwg.png"></p>
+<p><img data-src="https://cdn-images-1.medium.com/max/800/1*7FOi8twIY2LmDCpM-rOtwg.png"></p>
 <h2 id="Comparison"><a href="#Comparison" class="headerlink" title="Comparison"></a>Comparison</h2><p>内存的连续分配和回收以及垃圾收集将导致Android应用程序的滞后，从而降低了应用程序的性能。 除此之外，ArrayMap＆SparseArray通过使用2个小数组而不是一个大的数组来避免内存问题。</p>
 <h3 id="使用SparseArray比使用HashMap的好处是："><a href="#使用SparseArray比使用HashMap的好处是：" class="headerlink" title="使用SparseArray比使用HashMap的好处是："></a>使用SparseArray比使用HashMap的好处是：</h3><ul>
 <li>使用原语（primitives）带来更多的内存效率</li>
@@ -257,7 +298,7 @@
 <li>仅适用于Android</li>
 </ul>
 <p>一般来说，如果没有频繁的插入或删除操作，且大小是小于1000，那么ArrayMap / SparseArray类是非常好的选择。</p>
-<p>来自Android开发者的视频将为您提供进一步的细节：<br><img src="https://youtu.be/ORgucLTtTDI"></p>
+<p>来自Android开发者的视频将为您提供进一步的细节：<br><img data-src="https://youtu.be/ORgucLTtTDI"></p>
 <h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><p>我们可以得出结论，将整数映射到对象，SparseArray比使用HashMap的更有效。 理论是SparseArray可以比HashMap（&lt;1000）更快地添加和检索元素，在这种情况下，减少了哈希函数处理时间。</p>
 <blockquote>
 <p>原文地址：<a target="_blank" rel="noopener" href="https://android.jlelse.eu/app-optimization-with-arraymap-sparsearray-in-android-c0b7de22541a">https://android.jlelse.eu/app-optimization-with-arraymap-sparsearray-in-android-c0b7de22541a</a></p>
@@ -268,6 +309,52 @@
     
     
     
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Jiezhi.G
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://jiezhi.github.io/2017/03/30/android-arraymap-vs-sparsearray/" title="android中的ArrayMap和SparseArray">https://jiezhi.github.io/2017/03/30/android-arraymap-vs-sparsearray/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+        
+
+  <div class="followme">
+    <p>Welcome to my other publishing channels</p>
+
+    <div class="social-list">
+
+        <div class="social-item">
+          <a target="_blank" class="social-link" href="https://telegram.me/Jiezhi">
+            <span class="icon">
+              <i class="fab fa-telegram"></i>
+            </span>
+
+            <span class="label">Telegram</span>
+          </a>
+        </div>
+
+        <div class="social-item">
+          <a target="_blank" class="social-link" href="/atom.xml">
+            <span class="icon">
+              <i class="fa fa-rss"></i>
+            </span>
+
+            <span class="label">RSS</span>
+          </a>
+        </div>
+    </div>
+  </div>
+
 
       <footer class="post-footer">
           <div class="post-tags">
@@ -275,6 +362,11 @@
           </div>
 
         
+  <div class="post-widgets">
+    <div class="wp_rating">
+      <div id="wpac-rating"></div>
+    </div>
+  </div>
 
 
         
@@ -299,6 +391,30 @@
 
           </div>
           
+      <div class="tabs tabs-comment">
+        <ul class="nav-tabs">
+            <li class="tab"><a href="#comment-changyan">changyan</a></li>
+            <li class="tab"><a href="#comment-disqus">disqus</a></li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane changyan" id="comment-changyan">
+              
+  <div class="comments">
+    <div id="SOHUCS"></div>
+  </div>
+  
+            </div>
+            <div class="tab-pane disqus" id="comment-disqus">
+              
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+            </div>
+        </div>
+      </div>
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -364,15 +480,24 @@
         </a>
       </div>
       <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
         <span class="site-state-item-count">29</span>
-        <span class="site-state-item-name">categories</span>
+        <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
         <span class="site-state-item-count">101</span>
-        <span class="site-state-item-name">tags</span>
+        <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
 </div>
+  <div class="sidebar-button motion-element">
+    <a onclick="Chatra('openChat', true);"><i class="fa fa-comment"></i>
+    Chat
+  </a>
+  </div>
   <div class="links-of-author motion-element">
       <span class="links-of-author-item">
         <a href="https://github.com/Jiezhi" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Jiezhi" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
@@ -380,6 +505,9 @@
       <span class="links-of-author-item">
         <a href="mailto:Jiezhi.G+blog@gmail.com" title="E-Mail → mailto:Jiezhi.G+blog@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
       </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
   </div>
 
 
@@ -409,7 +537,7 @@
   </span>
   <span class="author" itemprop="copyrightHolder">Jiezhi</span>
 </div>
-  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
   </div>
 
         
@@ -426,7 +554,9 @@
   </div>
 
   
+  <script size="300" alpha="0.6" zIndex="-1" src="/lib/canvas-ribbon/canvas-ribbon.js"></script>
   <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
   <script src="/lib/velocity/velocity.min.js"></script>
   <script src="/lib/velocity/velocity.ui.min.js"></script>
 
@@ -435,7 +565,7 @@
 <script src="/js/motion.js"></script>
 
 
-<script src="/js/schemes/muse.js"></script>
+<script src="/js/schemes/pisces.js"></script>
 
 
 <script src="/js/next-boot.js"></script>
@@ -447,9 +577,41 @@
 
 
 
+  <script>
+  if (CONFIG.page.isPost) {
+    wpac_init = window.wpac_init || [];
+    wpac_init.push({
+      widget: 'Rating',
+      id    : 30099,
+      el    : 'wpac-rating',
+      color : 'fc6423'
+    });
+    (function() {
+      if ('WIDGETPACK_LOADED' in window) return;
+      WIDGETPACK_LOADED = true;
+      var mc = document.createElement('script');
+      mc.type = 'text/javascript';
+      mc.async = true;
+      mc.src = '//embed.widgetpack.com/widget.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(mc, s.nextSibling);
+    })();
+  }
+  </script>
 
 
 
+  <script>
+    (function(d, w, c) {
+      w.ChatraID = 'GCiPZzBaHr3o5PGkv';
+      var s = d.createElement('script');
+      w[c] = w[c] || function() {
+        (w[c].q = w[c].q || []).push(arguments);
+      };
+      s.async = true;
+      s.src = 'https://call.chatra.io/chatra.js';
+      if (d.head) d.head.appendChild(s);
+    })(document, window, 'Chatra');
+  </script>
 
 
 
@@ -462,6 +624,51 @@
   
 
   
+
+  <script>
+  NexT.utils.loadComments(document.querySelector('#SOHUCS'), () => {
+    var appid = 'cysq6qFcK';
+    var conf = '093315534266dc554f953e94c4b00510';
+    var width = window.innerWidth || document.documentElement.clientWidth;
+    if (width < 960) {
+      window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>');
+    } else {
+      var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){window.changyan.api.config({appid:appid,conf:conf})});
+    }
+  });
+  </script>
+  <script src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script>
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://jiezhi.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://jiezhi.github.io/2017/03/30/android-arraymap-vs-sparsearray/";
+    this.page.identifier = "2017/03/30/android-arraymap-vs-sparsearray/";
+    this.page.title = "android中的ArrayMap和SparseArray";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://jiezhi.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
 
 </body>
 </html>
