@@ -17,7 +17,7 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"jiezhi.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"algolia":{"apiKey":"778170cba39be8aded6d4bb919ee084f","indexName":"Jiezhi Blog","hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+    var CONFIG = {"hostname":"jiezhi.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"algolia":{"apiKey":"778170cba39be8aded6d4bb919ee084f","indexName":"Jiezhi Blog","hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
   <meta name="description" content="最近JSON对象非常受欢迎。那让我们看看如何对他们建模。">
@@ -29,7 +29,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://cdn-images-1.medium.com/max/800/1*YoEqqnUgEcJDyFgu6_KLgw.gif">
 <meta property="article:published_time" content="2017-03-21T20:58:31.000Z">
-<meta property="article:modified_time" content="2021-04-13T10:10:04.447Z">
+<meta property="article:modified_time" content="2021-04-13T10:26:08.374Z">
 <meta property="article:author" content="Jiezhi">
 <meta property="article:tag" content="android">
 <meta property="article:tag" content="json">
@@ -191,7 +191,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          【译】Android Studio 技巧8 —— Json模型
+          【译】Android Studio 技巧8 —— Json模型<a href="https://github.com/Jiezhi/jiezhi.github.io/tree/source/source/_posts_posts/android-studio-tip8.md" class="post-edit-link" title="Edit this post" rel="noopener" target="_blank"><i class="fa fa-pencil-alt"></i></a>
         </h1>
 
         <div class="post-meta">
@@ -208,7 +208,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-04-13 10:10:04" itemprop="dateModified" datetime="2021-04-13T10:10:04+00:00">2021-04-13</time>
+                <time title="Modified: 2021-04-13 10:26:08" itemprop="dateModified" datetime="2021-04-13T10:26:08+00:00">2021-04-13</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -267,7 +267,7 @@
 <p>试想一下，你的后端团队给了你一个你期望的JSON示例。 分析过后，你尝试建立POJO模型，所以你通过众多的第三方库简单地进行注入（例如<a target="_blank" rel="noopener" href="https://github.com/google/gson">gson</a>）。 你花了很多时间来创建表示json的每个单个实体的POJO。 这非常无聊而且浪费了大量的时间。 部分人可能会使用<a target="_blank" rel="noopener" href="http://www.jsonschema2pojo.org/">json2pojo</a>网站，但你仍然必须手动将生成的类放入到你的包，而且可能变得很混乱。</p>
 <p>让我们看一个不错的插件，可以更高效地处理这个过程。</p>
 <hr>
-<h3 id="RoboPOJOGenerator"><a href="#RoboPOJOGenerator" class="headerlink" title="RoboPOJOGenerator"></a><a target="_blank" rel="noopener" href="https://plugins.jetbrains.com/plugin/8634-robopojogenerator">RoboPOJOGenerator</a></h3><p>它支持从模式(schema)或从实际的JSON数据中生成POJO模型。 它还可以生成支持gson，Jackson，LoganSquare和AutoValueGson方案的对象，因此您可以使用任何种类的库来解析。 它还支持<em>Kotlin</em>，这是一个非常好的功能。它还会问你是否要生成<em>toString</em>和<em>getters＆setters</em>方法。<br><img data-src="https://cdn-images-1.medium.com/max/800/1*YoEqqnUgEcJDyFgu6_KLgw.gif"></p>
+<h3 id="RoboPOJOGenerator"><a href="#RoboPOJOGenerator" class="headerlink" title="RoboPOJOGenerator"></a><a target="_blank" rel="noopener" href="https://plugins.jetbrains.com/plugin/8634-robopojogenerator">RoboPOJOGenerator</a></h3><p>它支持从模式(schema)或从实际的JSON数据中生成POJO模型。 它还可以生成支持gson，Jackson，LoganSquare和AutoValueGson方案的对象，因此您可以使用任何种类的库来解析。 它还支持<em>Kotlin</em>，这是一个非常好的功能。它还会问你是否要生成<em>toString</em>和<em>getters＆setters</em>方法。<br><img src="https://cdn-images-1.medium.com/max/800/1*YoEqqnUgEcJDyFgu6_KLgw.gif"></p>
 <hr>
 <p>我希望这将帮助你加快开发过程，并且减少无聊的工作量！ 敬请关注下一篇文章！</p>
 
@@ -276,6 +276,21 @@
     
     
     
+        <div class="reward-container">
+  <div></div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    Donate
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.jpg" alt="Jiezhi Alipay">
+        <p>Alipay</p>
+      </div>
+
+  </div>
+</div>
+
         
 
 <div>
@@ -524,9 +539,7 @@
   </div>
 
   
-  <script size="300" alpha="0.6" zIndex="-1" src="/lib/canvas-ribbon/canvas-ribbon.js"></script>
   <script src="/lib/anime.min.js"></script>
-  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
   <script src="/lib/velocity/velocity.min.js"></script>
   <script src="/lib/velocity/velocity.ui.min.js"></script>
 

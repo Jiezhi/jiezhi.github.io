@@ -17,7 +17,7 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"jiezhi.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"algolia":{"apiKey":"778170cba39be8aded6d4bb919ee084f","indexName":"Jiezhi Blog","hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+    var CONFIG = {"hostname":"jiezhi.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"algolia":{"apiKey":"778170cba39be8aded6d4bb919ee084f","indexName":"Jiezhi Blog","hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
   <meta name="description" content="今天，我们讨论一下View。让我们谈谈如何快速地从xml布局文件中获取到定义好的View实例。">
@@ -32,7 +32,7 @@
 <meta property="og:image" content="https://cdn-images-1.medium.com/max/1600/1*7JNg8td1MVHzTuzH6EVF6w.gif">
 <meta property="og:image" content="https://cdn-images-1.medium.com/max/1600/1*BTURA408x-3YQzxL-KWbZQ.gif">
 <meta property="article:published_time" content="2017-03-16T20:52:38.000Z">
-<meta property="article:modified_time" content="2021-04-13T10:10:04.447Z">
+<meta property="article:modified_time" content="2021-04-13T10:26:08.374Z">
 <meta property="article:author" content="Jiezhi">
 <meta property="article:tag" content="android">
 <meta property="article:tag" content="translate">
@@ -192,7 +192,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          【译】Android Studio 贴士 3— FindViewById
+          【译】Android Studio 贴士 3— FindViewById<a href="https://github.com/Jiezhi/jiezhi.github.io/tree/source/source/_posts_posts/android-studio-findviewbyid.md" class="post-edit-link" title="Edit this post" rel="noopener" target="_blank"><i class="fa fa-pencil-alt"></i></a>
         </h1>
 
         <div class="post-meta">
@@ -209,7 +209,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-04-13 10:10:04" itemprop="dateModified" datetime="2021-04-13T10:10:04+00:00">2021-04-13</time>
+                <time title="Modified: 2021-04-13 10:26:08" itemprop="dateModified" datetime="2021-04-13T10:26:08+00:00">2021-04-13</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -276,11 +276,11 @@
 <p><a target="_blank" rel="noopener" href="https://plugins.jetbrains.com/idea/plugin/7369-android-butterknife-zelezny">Android ButterKnife Zelezny</a></p>
 <p>这个插件将允许你简单地生成ButterKnife注解，而对于Activity和Fragment，它也将添加ButterKnife.bind(…)方法的调用。在View中，则需要你自己添加该调用。</p>
 <ul>
-<li><p>Activity<br><img data-src="https://cdn-images-1.medium.com/max/1600/1*u1c9R8_uDr75A8QO3FdSbQ.gif"></p>
+<li><p>Activity<br><img src="https://cdn-images-1.medium.com/max/1600/1*u1c9R8_uDr75A8QO3FdSbQ.gif"></p>
 </li>
-<li><p>Fragment<br><img data-src="https://cdn-images-1.medium.com/max/1600/1*XyXCOv5S-sFrejQPfgaVaw.gif"></p>
+<li><p>Fragment<br><img src="https://cdn-images-1.medium.com/max/1600/1*XyXCOv5S-sFrejQPfgaVaw.gif"></p>
 </li>
-<li><p>View<br><img data-src="https://cdn-images-1.medium.com/max/1600/1*7JNg8td1MVHzTuzH6EVF6w.gif"></p>
+<li><p>View<br><img src="https://cdn-images-1.medium.com/max/1600/1*7JNg8td1MVHzTuzH6EVF6w.gif"></p>
 </li>
 </ul>
 <hr>
@@ -289,7 +289,7 @@
 <p>编辑：我之前向该仓库中推送对Fragment和自定义View的支持，如今，开发人员发布了解决下面提到的问题的插件的v1.3.5。 我将相应地更新GIF。</p>
 <p>这个很棒的插件仍然在开发中，目前还不能很好地支持Fragment和自定义view。 在Activity中，它将为你执行一切，而无需手动定义和赋值布局文件中的view。 在Fragment和自定义view中，您将需要稍微更多的努力。</p>
 <ul>
-<li>Activity<br><img data-src="https://cdn-images-1.medium.com/max/1600/1*BTURA408x-3YQzxL-KWbZQ.gif"></li>
+<li>Activity<br><img src="https://cdn-images-1.medium.com/max/1600/1*BTURA408x-3YQzxL-KWbZQ.gif"></li>
 </ul>
 <p>如前所述，它不能很好地与Fragment工作，但我们任然可以使它工作。 你需要重写onCreate，因为插件只能在onCreate方法中调用生成代码来工作。</p>
 <ul>
@@ -316,6 +316,21 @@
     
     
     
+        <div class="reward-container">
+  <div></div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    Donate
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.jpg" alt="Jiezhi Alipay">
+        <p>Alipay</p>
+      </div>
+
+  </div>
+</div>
+
         
 
 <div>
@@ -561,9 +576,7 @@
   </div>
 
   
-  <script size="300" alpha="0.6" zIndex="-1" src="/lib/canvas-ribbon/canvas-ribbon.js"></script>
   <script src="/lib/anime.min.js"></script>
-  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
   <script src="/lib/velocity/velocity.min.js"></script>
   <script src="/lib/velocity/velocity.ui.min.js"></script>
 

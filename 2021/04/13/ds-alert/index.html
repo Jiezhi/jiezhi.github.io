@@ -17,7 +17,7 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"jiezhi.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"algolia":{"apiKey":"778170cba39be8aded6d4bb919ee084f","indexName":"Jiezhi Blog","hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+    var CONFIG = {"hostname":"jiezhi.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"algolia":{"apiKey":"778170cba39be8aded6d4bb919ee084f","indexName":"Jiezhi Blog","hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
   <meta name="description" content="目前海豚调度器(1.3.6)的告警只支持邮件和短信，对于大部分在夜间执行的任务来说，很难做到在任务出错时及时通知到相应人员。所以基于当前的代码做了一些优化。">
@@ -29,7 +29,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://jiezhi.github.io/2021/04/13/ds-alert/ds_alert_code.png">
 <meta property="article:published_time" content="2021-04-13T15:42:56.000Z">
-<meta property="article:modified_time" content="2021-04-13T10:10:04.451Z">
+<meta property="article:modified_time" content="2021-04-13T10:26:08.382Z">
 <meta property="article:author" content="Jiezhi">
 <meta property="article:tag" content="海豚调度器">
 <meta property="article:tag" content="DolphinScheduler">
@@ -191,7 +191,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          海豚调度器告警优化
+          海豚调度器告警优化<a href="https://github.com/Jiezhi/jiezhi.github.io/tree/source/source/_posts_posts/ds-alert.md" class="post-edit-link" title="Edit this post" rel="noopener" target="_blank"><i class="fa fa-pencil-alt"></i></a>
         </h1>
 
         <div class="post-meta">
@@ -202,7 +202,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2021-04-13 15:42:56 / Modified: 10:10:04" itemprop="dateCreated datePublished" datetime="2021-04-13T15:42:56+00:00">2021-04-13</time>
+              <time title="Created: 2021-04-13 15:42:56 / Modified: 10:26:08" itemprop="dateCreated datePublished" datetime="2021-04-13T15:42:56+00:00">2021-04-13</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -273,7 +273,7 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">Properties kafkaProperties = <span class="keyword">new</span> Properties();</span><br><span class="line">kafkaProperties.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, PropertyUtils.getString(Constants.KAFKA_BOOTSTRAP));</span><br><span class="line">kafkaProperties.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());</span><br><span class="line">kafkaProperties.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());</span><br><span class="line">kafkaProperties.setProperty(ProducerConfig.ACKS_CONFIG, <span class="string">&quot;1&quot;</span>);</span><br><span class="line">producer = <span class="keyword">new</span> KafkaProducer&lt;&gt;(kafkaProperties);</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    String alertDataString = JSONUtils.toJsonString(alertInfo);</span><br><span class="line">    logger.info(alertDataString);</span><br><span class="line">    producer.send(<span class="keyword">new</span> ProducerRecord&lt;&gt;(TOPIC_NAME, alertDataString));</span><br><span class="line">&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">    logger.error(e.getMessage());</span><br><span class="line">    e.printStackTrace();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
 </ol>
 <p>可参考截图</p>
-<img data-src="/2021/04/13/ds-alert/ds_alert_code.png" class="" title="code">
+<img src="/2021/04/13/ds-alert/ds_alert_code.png" class="" title="code">
 
 
 <ol start="4">
@@ -294,6 +294,21 @@
     
     
     
+        <div class="reward-container">
+  <div></div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    Donate
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.jpg" alt="Jiezhi Alipay">
+        <p>Alipay</p>
+      </div>
+
+  </div>
+</div>
+
         
 
 <div>
@@ -539,9 +554,7 @@
   </div>
 
   
-  <script size="300" alpha="0.6" zIndex="-1" src="/lib/canvas-ribbon/canvas-ribbon.js"></script>
   <script src="/lib/anime.min.js"></script>
-  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
   <script src="/lib/velocity/velocity.min.js"></script>
   <script src="/lib/velocity/velocity.ui.min.js"></script>
 
