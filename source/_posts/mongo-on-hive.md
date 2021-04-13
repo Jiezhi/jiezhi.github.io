@@ -13,6 +13,7 @@ photos:
 ---
 
 
+Mongo 问题记录。
 
 <!--more-->
 
