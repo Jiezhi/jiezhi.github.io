@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"jiezhi.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"apiKey":"778170cba39be8aded6d4bb919ee084f","indexName":"Jiezhi Blog","hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="JDBC的配置给你带来多少的麻烦？">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CDH中sqoop无法在 hue 中正确执行的问题">
+<meta property="og:url" content="https://jiezhi.github.io/2020/01/17/run-sqoop-with-oozie-in-hue/index.html">
+<meta property="og:site_name" content="Jiezhi&#39;s Blog">
+<meta property="og:description" content="JDBC的配置给你带来多少的麻烦？">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-01-17T17:38:36.000Z">
+<meta property="article:modified_time" content="2021-04-13T08:33:13.637Z">
+<meta property="article:author" content="Jiezhi">
+<meta property="article:tag" content="CDH">
+<meta property="article:tag" content="Hue">
+<meta property="article:tag" content="Sqoop">
+<meta property="article:tag" content="Ooozie">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://jiezhi.github.io/2020/01/17/run-sqoop-with-oozie-in-hue/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-cn'
+  };
+</script>
+
+  <title>CDH中sqoop无法在 hue 中正确执行的问题 | Jiezhi's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Jiezhi's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">好记性不如烂笔头</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags<span class="badge">101</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories<span class="badge">29</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives<span class="badge">82</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+    <link itemprop="mainEntityOfPage" href="https://jiezhi.github.io/2020/01/17/run-sqoop-with-oozie-in-hue/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Jiezhi">
+      <meta itemprop="description" content="努力地成为一个大牛">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Jiezhi's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          CDH中sqoop无法在 hue 中正确执行的问题
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-01-17 17:38:36" itemprop="dateCreated datePublished" datetime="2020-01-17T17:38:36+00:00">2020-01-17</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-04-13 08:33:13" itemprop="dateModified" datetime="2021-04-13T08:33:13+00:00">2021-04-13</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/BigData/" itemprop="url" rel="index"><span itemprop="name">BigData</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>JDBC的配置给你带来多少的麻烦？</p>
+<span id="more"></span>
+
+<p>安装好 CDH 后，添加完 sqoop 1服务后，去 hue 中执行直接报错。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">No child hadoop job is executed.</span><br><span class="line">java.lang.reflect.InvocationTargetException</span><br><span class="line">  ...</span><br><span class="line">	at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:<span class="number">1875</span>)</span><br><span class="line">	at org.apache.oozie.action.hadoop.LauncherAM.main(LauncherAM.java:<span class="number">141</span>)</span><br><span class="line">Caused by: java.lang.SecurityException: Intercepted System.exit(<span class="number">1</span>)</span><br><span class="line">	at org.apache.oozie.action.hadoop.security.LauncherSecurityManager.checkExit(LauncherSecurityManager.java:<span class="number">57</span>)</span><br><span class="line">	at java.lang.Runtime.exit(Runtime.java:<span class="number">107</span>)</span><br><span class="line">	at java.lang.System.exit(System.java:<span class="number">971</span>)</span><br><span class="line">	at org.apache.sqoop.Sqoop.main(Sqoop.java:<span class="number">252</span>)</span><br><span class="line">	at org.apache.oozie.action.hadoop.SqoopMain.runSqoopJob(SqoopMain.java:<span class="number">214</span>)</span><br><span class="line">	at org.apache.oozie.action.hadoop.SqoopMain.run(SqoopMain.java:<span class="number">199</span>)</span><br><span class="line">	at org.apache.oozie.action.hadoop.LauncherMain.run(LauncherMain.java:<span class="number">104</span>)</span><br><span class="line">	at org.apache.oozie.action.hadoop.SqoopMain.main(SqoopMain.java:<span class="number">51</span>)</span><br><span class="line">	... <span class="number">16</span> more</span><br><span class="line">Intercepting System.exit(<span class="number">1</span>)</span><br><span class="line">Failing Oozie Launcher, Main Class [org.apache.oozie.action.hadoop.SqoopMain], exit code [<span class="number">1</span>]</span><br></pre></td></tr></table></figure>
+
+<p>围绕这个问题找了很久的都无法找到对应的问题，之前都是直接去 YARN 里看的 Log。这两天去看了 stderr 里的错误才发现是 JDBC 驱动造成的问题（吐槽下某骨文公司）很多程序本可以开箱即用或者一键安装的，结果老是因为 JDBC 驱动要去手动下载而浪费很多时间。<br>再看下真正的错误：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">java.lang.RuntimeException: Could not load db driver class: com.mysql.jdbc.Driver</span><br><span class="line">	at org.apache.sqoop.manager.SqlManager.makeConnection(SqlManager.java:<span class="number">874</span>)</span><br><span class="line">	at org.apache.sqoop.manager.GenericJdbcManager.getConnection(GenericJdbcManager.java:<span class="number">59</span>)</span><br><span class="line">	at org.apache.sqoop.manager.CatalogQueryManager.listTables(CatalogQueryManager.java:<span class="number">102</span>)</span><br><span class="line">	at org.apache.sqoop.tool.ListTablesTool.run(ListTablesTool.java:<span class="number">49</span>)</span><br><span class="line">	at org.apache.sqoop.Sqoop.run(Sqoop.java:<span class="number">146</span>)</span><br></pre></td></tr></table></figure>
+
+<p>然后以为是 sqoop JDBC 驱动没安装好，不过在节点上却可以直接用 sqoop 命令来导入导出数据。那说明 sqoop 的驱动没问题呀，我们知道 sqoop 最终是落在 oozie 上执行的，那么是不是有可能 oozie 找不到对应的驱动造成的呢。</p>
+<p>我们去 oozie 所在的节点上执行命令：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> oozie admin -shareliblist</span></span><br><span class="line">[Available ShareLib]</span><br><span class="line">hive</span><br><span class="line">distcp</span><br><span class="line">git</span><br><span class="line">mapreduce-streaming</span><br><span class="line">spark</span><br><span class="line">oozie</span><br><span class="line">hcatalog</span><br><span class="line">hive2</span><br><span class="line">sqoop</span><br><span class="line">pig</span><br></pre></td></tr></table></figure>
+
+<p>看一下 sqoop 相关的 jar 包：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> oozie admin -shareliblist sqoop</span></span><br><span class="line">[Available ShareLib]</span><br><span class="line">sqoop</span><br><span class="line">	hdfs://yournodename:8020/user/oozie/share/lib/lib_20200108192149/sqoop/HikariCP-2.6.1.jar</span><br><span class="line">	hdfs://yournodename:8020/user/oozie/share/lib/lib_20200108192149/sqoop/HikariCP-java7-2.4.12.jar</span><br><span class="line">	hdfs://yournodename:8020/user/oozie/share/lib/lib_20200108192149/sqoop/ST4-4.0.4.jar</span><br><span class="line">	hdfs://yournodename:8020/user/oozie/share/lib/lib_20200108192149/sqoop/aggdesigner-algorithm-6.0.jar</span><br><span class="line">	hdfs://yournodename:8020/user/oozie/share/lib/lib_20200108192149/sqoop/ant-1.9.1.jar</span><br><span class="line">	hdfs://yournodename:8020/user/oozie/share/lib/lib_20200108192149/sqoop/ant-launcher-1.9.1.jar</span><br><span class="line">	hdfs://yournodename:8020/user/oozie/share/lib/lib_20200108192149/sqoop/antlr-2.7.7.jar</span><br><span class="line">	hdfs://yournodename:8020/user/oozie/share/lib/lib_20200108192149/sqoop/antlr-runtime-3.4.jar</span><br><span class="line">	hdfs://yournodename:8020/user/oozie/share/lib/lib_20200108192149/sqoop/aopalliance-1.0.jar</span><br><span class="line">	hdfs://yournodename:8020/user/oozie/share/lib/lib_20200108192149/sqoop/aopalliance-repackaged-2.5.0-b32.jar</span><br><span class="line">  ...</span><br></pre></td></tr></table></figure>
+<p> grep 一下，发现并没有 JDBC 驱动，那么需要将 sqoop 目录下（一般为/var/lib/sqoop/）的 jdbc 驱动放到 oozie 目录下（具体在 HDFS 上的目录看上面的输出结果就知道了）。如果 sqoop 的 jdbc 还没配好，直接按照<a target="_blank" rel="noopener" href="https://docs.cloudera.com/documentation/enterprise/latest/topics/cm_mc_sqoop1_client.html#topic_13_7">CDH 文档</a>安装即可。</p>
+<p>最后执行下更新即可：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> oozie admin -sharelibupdate</span></span><br><span class="line">[ShareLib update status]</span><br><span class="line">	sharelibDirOld = hdfs://yournodename:8020/user/oozie/share/lib/lib_20200108192149</span><br><span class="line">	host = http://yournodename:11000/oozie</span><br><span class="line">	sharelibDirNew = hdfs://yournodename:8020/user/oozie/share/lib/lib_20200108192149</span><br><span class="line">	status = Successful</span><br></pre></td></tr></table></figure>
+
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/CDH/" rel="tag"># CDH</a>
+              <a href="/tags/Hue/" rel="tag"># Hue</a>
+              <a href="/tags/Sqoop/" rel="tag"># Sqoop</a>
+              <a href="/tags/Ooozie/" rel="tag"># Ooozie</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/01/16/supervisord/" rel="prev" title="Supervisord介绍与使用">
+      <i class="fa fa-chevron-left"></i> Supervisord介绍与使用
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/03/31/atlas2-cdh6-hive-hook/" rel="next" title="CDH6配置 Atlas，及 Hive Hook">
+      CDH6配置 Atlas，及 Hive Hook <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Jiezhi</p>
+  <div class="site-description" itemprop="description">努力地成为一个大牛</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">82</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">categories</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">101</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Jiezhi" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Jiezhi" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:Jiezhi.G+blog@gmail.com" title="E-Mail → mailto:Jiezhi.G+blog@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jiezhi</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

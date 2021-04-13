@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"jiezhi.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"apiKey":"778170cba39be8aded6d4bb919ee084f","indexName":"Jiezhi Blog","hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="最近把 CDH 整个集群都迁移了，大部分都没啥太大问题，跟着官方文档操作就行了。 Hue 这个数据库中外键依赖太多，得来点sao操作。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CDH 元数据库迁移之 Hue">
+<meta property="og:url" content="https://jiezhi.github.io/2021/03/05/cdh-hue-db-migration/index.html">
+<meta property="og:site_name" content="Jiezhi&#39;s Blog">
+<meta property="og:description" content="最近把 CDH 整个集群都迁移了，大部分都没啥太大问题，跟着官方文档操作就行了。 Hue 这个数据库中外键依赖太多，得来点sao操作。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jiezhi.github.io/2021/03/05/cdh-hue-db-migration/hue.png">
+<meta property="og:image" content="https://jiezhi.github.io/2021/03/05/cdh-hue-db-migration/cdh-hue.png">
+<meta property="article:published_time" content="2021-03-05T16:48:11.000Z">
+<meta property="article:modified_time" content="2021-04-13T08:33:13.621Z">
+<meta property="article:author" content="Jiezhi">
+<meta property="article:tag" content="CDH">
+<meta property="article:tag" content="BigData">
+<meta property="article:tag" content="Hue">
+<meta property="article:tag" content="Migration">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jiezhi.github.io/2021/03/05/cdh-hue-db-migration/hue.png">
+
+<link rel="canonical" href="https://jiezhi.github.io/2021/03/05/cdh-hue-db-migration/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-cn'
+  };
+</script>
+
+  <title>CDH 元数据库迁移之 Hue | Jiezhi's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Jiezhi's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">好记性不如烂笔头</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags<span class="badge">101</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories<span class="badge">29</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives<span class="badge">82</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+    <link itemprop="mainEntityOfPage" href="https://jiezhi.github.io/2021/03/05/cdh-hue-db-migration/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Jiezhi">
+      <meta itemprop="description" content="努力地成为一个大牛">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Jiezhi's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          CDH 元数据库迁移之 Hue
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-03-05 16:48:11" itemprop="dateCreated datePublished" datetime="2021-03-05T16:48:11+00:00">2021-03-05</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-04-13 08:33:13" itemprop="dateModified" datetime="2021-04-13T08:33:13+00:00">2021-04-13</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/BigData/" itemprop="url" rel="index"><span itemprop="name">BigData</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>最近把 CDH 整个集群都迁移了，大部分都没啥太大问题，跟着官方文档操作就行了。</p>
+<p>Hue 这个数据库中外键依赖太多，得来点sao操作。</p>
+<span id="more"></span>
+
+<p>首先强烈建议不要把 CDH 集群的数据库装在 CDH 节点上，不然遇到集群迁移而不得不迁移数据库时就头疼了。</p>
+<p>大部分的服务像 Hive、Sentry、Oozie 这类的，停服务之后直接 mysqldump 到新的数据库后，在配置中修改新的数据库配置，启动即可。</p>
+<p>而 Hue 的库不一样，Hue 是基于 Django 开发的，当然不一样的地方在于其库中的表依赖关系太复杂。看图：</p>
+<img src="/2021/03/05/cdh-hue-db-migration/hue.png" class="">
+
+<p>加载 mysqldump 出来的文件会报错, 定位的错误是因为导入desktop_document2这张表出的错，一方面这张表中可能存在中文，另一方面有一个对自身的外键约束，所以导入时基本会挂。</p>
+<p>CDH 本身也提供了 Hue 数据库迁移的<a target="_blank" rel="noopener" href="https://docs.cloudera.com/documentation/enterprise/latest/topics/hue_dbs_migrate.html">操作文档</a>，大致是把数据按 json 格式保存下来，然后同步数据库 DDL，操作数据库先去除外键依赖，然后加载数据，最后把依赖加上。</p>
+<ul>
+<li>Tips: 导出的文件 <code>/tmp/hue_database_dump.json</code> 比较大时，用 vi 打开比 vim 要快不少。*</li>
+</ul>
+<img src="/2021/03/05/cdh-hue-db-migration/cdh-hue.png" class="">
+
+<p>不过我按照文档操作在加载数据时出错了。此时隐约知道是因为前后两个运维装的数据库一个是MySQL, 一个是MariaDB，再加上配置文件有差异导致了数据同步种种问题（所以数据库迁移也最好用同样的配置，都是泪）。</p>
+<p>既然 CDH 提供的操作不行，那就自己一张表一张表备份吧。</p>
+<p>写了如下的脚本，理论上可以成功。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">array=( search_facet search_result search_sorting auth_user search_collection useradmin_huepermission auth_group useradmin_grouppermission django_content_type auth_permission django_admin_log desktop_document jobsub_oozieaction jobsub_ooziedesign jobsub_ooziejavaaction jobsub_ooziemapreduceaction jobsub_ooziestreamingaction oozie_node oozie_link oozie_decision oozie_decisionend oozie_distcp oozie_email oozie_fork oozie_fs oozie_generic oozie_hive oozie_java oozie_join oozie_kill oozie_mapreduce oozie_pig oozie_shell oozie_sqoop oozie_ssh oozie_streaming oozie_end oozie_start beeswax_session desktop_userpreferences django_openid_auth_useropenid jobsub_jobdesign useradmin_userprofile desktop_defaultconfiguration desktop_documenttag beeswax_savedquery oozie_job desktop_document2 pig_document pig_pigscript jobsub_jobhistory useradmin_ldapgroup auth_group_permissions auth_user_groups defaultconfiguration_groups desktop_documentpermission auth_user_user_permissions desktop_document_tags beeswax_queryhistory oozie_history desktop_document2permission desktop_document2_dependencies documentpermission_groups documentpermission_users documentpermission2_groups oozie_bundle documentpermission2_users oozie_workflow oozie_subworkflow oozie_coordinator oozie_bundledcoordinator oozie_dataset oozie_datainput oozie_dataoutput beeswax_metainstall desktop_settings django_session django_site jobsub_checkforsetup django_migrations django_openid_auth_nonce django_openid_auth_association axes_accesslog axes_accessattempt )</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="string">&quot;<span class="variable">$&#123;array[@]&#125;</span>&quot;</span></span><br><span class="line"><span class="keyword">do</span></span><br><span class="line">    <span class="built_in">echo</span> Processing <span class="variable">$i</span></span><br><span class="line">    mysqldump --default-character-set=utf8 --hex-blob -u hue -phuepw hue <span class="variable">$i</span> &gt; <span class="variable">$i</span>.sql &amp;&amp; ssh mysql-server <span class="string">&#x27;mysql -uhue -phuepw hue&#x27;</span> &lt; <span class="variable">$i</span>.sql</span><br><span class="line"></span><br><span class="line"><span class="keyword">done</span></span><br></pre></td></tr></table></figure>
+
+
+<hr>
+<p>表导入的顺序，是按外键依赖关系决定的。算是解决了外键的问题，实际操作还是遇到了问题，desktop_document2对自身的外键依赖会导致导入数据出现问题。</p>
+<p>所以我把上面的脚本拆分成 desktop_document2 前后两个脚本。即先同步如下的表：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">array=( search_facet search_result search_sorting auth_user search_collection useradmin_huepermission auth_group useradmin_grouppermission django_content_type auth_permission django_admin_log desktop_document jobsub_oozieaction jobsub_ooziedesign jobsub_ooziejavaaction jobsub_ooziemapreduceaction jobsub_ooziestreamingaction oozie_node oozie_link oozie_decision oozie_decisionend oozie_distcp oozie_email oozie_fork oozie_fs oozie_generic oozie_hive oozie_java oozie_join oozie_kill oozie_mapreduce oozie_pig oozie_shell oozie_sqoop oozie_ssh oozie_streaming oozie_end oozie_start beeswax_session desktop_userpreferences django_openid_auth_useropenid jobsub_jobdesign useradmin_userprofile desktop_defaultconfiguration desktop_documenttag beeswax_savedquery oozie_job )</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="string">&quot;<span class="variable">$&#123;array[@]&#125;</span>&quot;</span></span><br><span class="line"><span class="keyword">do</span></span><br><span class="line">    <span class="built_in">echo</span> Processing <span class="variable">$i</span></span><br><span class="line">    mysqldump --default-character-set=utf8 --hex-blob -u hue -phuepw hue <span class="variable">$i</span> &gt; <span class="variable">$i</span>.sql &amp;&amp; ssh mysql-server <span class="string">&#x27;mysql -uhue -phuepw hue&#x27;</span> &lt; <span class="variable">$i</span>.sql</span><br><span class="line"></span><br><span class="line"><span class="keyword">done</span></span><br></pre></td></tr></table></figure>
+
+<p>然后同步desktop_document2这张表，在desktop_document2.sql 中先把 DDL 中最后对自身的外键依赖删除，然后导入数据，最后加上对应的外键依赖：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> desktop_document2 <span class="keyword">ADD</span> <span class="keyword">CONSTRAINT</span> `desktop_document2_parent_directory_id_428ead9c_fk_desktop_d` <span class="keyword">FOREIGN</span> KEY (`parent_directory_id`) <span class="keyword">REFERENCES</span> `desktop_document2` (`id`);</span><br></pre></td></tr></table></figure>
+
+<p>最后同步剩下的表：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">array=( pig_document pig_pigscript jobsub_jobhistory useradmin_ldapgroup auth_group_permissions auth_user_groups defaultconfiguration_groups desktop_documentpermission auth_user_user_permissions desktop_document_tags beeswax_queryhistory oozie_history desktop_document2permission desktop_document2_dependencies documentpermission_groups documentpermission_users documentpermission2_groups oozie_bundle documentpermission2_users oozie_workflow oozie_subworkflow oozie_coordinator oozie_bundledcoordinator oozie_dataset oozie_datainput oozie_dataoutput beeswax_metainstall desktop_settings django_session django_site jobsub_checkforsetup django_migrations django_openid_auth_nonce django_openid_auth_association axes_accesslog axes_accessattempt )</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="string">&quot;<span class="variable">$&#123;array[@]&#125;</span>&quot;</span></span><br><span class="line"><span class="keyword">do</span></span><br><span class="line">    <span class="built_in">echo</span> Processing <span class="variable">$i</span></span><br><span class="line">    mysqldump --default-character-set=utf8 --hex-blob -u hue -phuepw hue <span class="variable">$i</span> &gt; <span class="variable">$i</span>.sql &amp;&amp; ssh mysql-server <span class="string">&#x27;mysql -uhue -phuepw hue&#x27;</span> &lt; <span class="variable">$i</span>.sql</span><br><span class="line"></span><br><span class="line"><span class="keyword">done</span></span><br></pre></td></tr></table></figure>
+
+<p>启动 Hue，貌似除了中文编码出现了点问题外，其他一切正常。</p>
+<p>对于含中文的文档乱码，点开后中文显示正常，再点击保存就好了。所以懒得再去定位数据库编码的问题了。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/CDH/" rel="tag"># CDH</a>
+              <a href="/tags/BigData/" rel="tag"># BigData</a>
+              <a href="/tags/Hue/" rel="tag"># Hue</a>
+              <a href="/tags/Migration/" rel="tag"># Migration</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/01/24/py-2020-top10lib-01-typer/" rel="prev" title="2020年度 Python 库 Top10库之1-Typer">
+      <i class="fa fa-chevron-left"></i> 2020年度 Python 库 Top10库之1-Typer
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/04/13/ds-alert/" rel="next" title="海豚调度器告警优化">
+      海豚调度器告警优化 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Jiezhi</p>
+  <div class="site-description" itemprop="description">努力地成为一个大牛</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">82</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">categories</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">101</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Jiezhi" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Jiezhi" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:Jiezhi.G+blog@gmail.com" title="E-Mail → mailto:Jiezhi.G+blog@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jiezhi</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

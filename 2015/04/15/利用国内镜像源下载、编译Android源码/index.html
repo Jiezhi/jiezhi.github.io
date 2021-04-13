@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"jiezhi.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"apiKey":"778170cba39be8aded6d4bb919ee084f","indexName":"Jiezhi Blog","hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="在国内下载Android可是不太容易，不过从Google断断续续地下载了几天源码后发现清华大学有个TUNA镜像源可以下载Android源码，甚是方便。 参考网站： http:&#x2F;&#x2F;source.android.com&#x2F;index.html https:&#x2F;&#x2F;aosp.tuna.tsinghua.edu.cn&#x2F; 一.环境准备： 现在Android源码的下载和编译在Linux和Mac OS上都可以了，但M">
+<meta property="og:type" content="article">
+<meta property="og:title" content="利用国内镜像源下载、编译Android源码">
+<meta property="og:url" content="https://jiezhi.github.io/2015/04/15/%E5%88%A9%E7%94%A8%E5%9B%BD%E5%86%85%E9%95%9C%E5%83%8F%E6%BA%90%E4%B8%8B%E8%BD%BD%E3%80%81%E7%BC%96%E8%AF%91Android%E6%BA%90%E7%A0%81/index.html">
+<meta property="og:site_name" content="Jiezhi&#39;s Blog">
+<meta property="og:description" content="在国内下载Android可是不太容易，不过从Google断断续续地下载了几天源码后发现清华大学有个TUNA镜像源可以下载Android源码，甚是方便。 参考网站： http:&#x2F;&#x2F;source.android.com&#x2F;index.html https:&#x2F;&#x2F;aosp.tuna.tsinghua.edu.cn&#x2F; 一.环境准备： 现在Android源码的下载和编译在Linux和Mac OS上都可以了，但M">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2015-04-15T21:18:31.000Z">
+<meta property="article:modified_time" content="2021-04-13T08:33:13.641Z">
+<meta property="article:author" content="Jiezhi">
+<meta property="article:tag" content="android">
+<meta property="article:tag" content="aosp">
+<meta property="article:tag" content="源码">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://jiezhi.github.io/2015/04/15/%E5%88%A9%E7%94%A8%E5%9B%BD%E5%86%85%E9%95%9C%E5%83%8F%E6%BA%90%E4%B8%8B%E8%BD%BD%E3%80%81%E7%BC%96%E8%AF%91Android%E6%BA%90%E7%A0%81/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-cn'
+  };
+</script>
+
+  <title>利用国内镜像源下载、编译Android源码 | Jiezhi's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Jiezhi's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">好记性不如烂笔头</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags<span class="badge">101</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories<span class="badge">29</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives<span class="badge">82</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+    <link itemprop="mainEntityOfPage" href="https://jiezhi.github.io/2015/04/15/%E5%88%A9%E7%94%A8%E5%9B%BD%E5%86%85%E9%95%9C%E5%83%8F%E6%BA%90%E4%B8%8B%E8%BD%BD%E3%80%81%E7%BC%96%E8%AF%91Android%E6%BA%90%E7%A0%81/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Jiezhi">
+      <meta itemprop="description" content="努力地成为一个大牛">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Jiezhi's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          利用国内镜像源下载、编译Android源码
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2015-04-15 21:18:31" itemprop="dateCreated datePublished" datetime="2015-04-15T21:18:31+00:00">2015-04-15</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-04-13 08:33:13" itemprop="dateModified" datetime="2021-04-13T08:33:13+00:00">2021-04-13</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index"><span itemprop="name">Android</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>在国内下载Android可是不太容易，不过从Google断断续续地下载了几天源码后发现清华大学有个TUNA镜像源可以下载Android源码，甚是方便。</p>
+<p>参考网站：</p>
+<p><a target="_blank" rel="noopener" href="http://source.android.com/index.html">http://source.android.com/index.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://aosp.tuna.tsinghua.edu.cn/">https://aosp.tuna.tsinghua.edu.cn/</a></p>
+<p>一.环境准备：</p>
+<p>现在Android源码的下载和编译在Linux和Mac OS上都可以了，但Mac OS上设置略微复杂点，所以我选择了Ubuntu 14.04 64位的虚拟机。（硬盘建议50G以上，编译的时候给虚拟机加大CPU和内存。）</p>
+<p>编译Gingerbread (2.3.x) 及其以上的源码需要64位的系统，以下的可以在32位系统上编译。</p>
+<p>1.Java下载和配置</p>
+<p>Java 7：适用最新版的源码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt-get update</span><br><span class="line">$ sudo apt-get install openjdk-7-jdk</span><br></pre></td></tr></table></figure>
+
+<p>如果系统上有多个Java版本，可以设置默认的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ sudo update-alternatives --config java</span><br><span class="line">$ sudo update-alternatives --config javac</span><br></pre></td></tr></table></figure>
+
+<p>Java 6: 适用于Gingerbread（2.3）~ KitKat（4.4）</p>
+<p>Java 5:适用于 Cupcake（1.5）~ Froyo（2.2）</p>
+<p>如果Java安装失败可到Java官网下载后自行安装，略去不表。</p>
+<p>2.其它依赖包：<br>​<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt-get install bison g++-multilib git gperf libxml2-utils make zlib1g-dev:i386 zip</span><br></pre></td></tr></table></figure></p>
+<p>但在编译过程中发现还需要两个包，所以也提前安装好吧：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt-get install flex libswitch-perl</span><br></pre></td></tr></table></figure>
+
+<p>如果是Ubuntu 12.04：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt-get install git gnupg flex bison gperf build-essential \</span><br><span class="line">  zip curl libc6-dev libncurses5-dev:i386 x11proto-core-dev \</span><br><span class="line">  libx11-dev:i386 libreadline6-dev:i386 libgl1-mesa-glx:i386 \</span><br><span class="line">  libgl1-mesa-dev g++-multilib mingw32 tofrodos \</span><br><span class="line">  python-markdown libxml2-utils xsltproc zlib1g-dev:i386</span><br><span class="line">$ sudo ln -s &#x2F;usr&#x2F;lib&#x2F;i386-linux-gnu&#x2F;mesa&#x2F;libGL.so.1 &#x2F;usr&#x2F;lib&#x2F;i386-linux-gnu&#x2F;libGL.so</span><br></pre></td></tr></table></figure>
+
+<p>如果是Ubuntu 10.04 – 11.10：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt-get install git gnupg flex bison gperf build-essential \</span><br><span class="line">  zip curl zlib1g-dev libc6-dev lib32ncurses5-dev ia32-libs \</span><br><span class="line">  x11proto-core-dev libx11-dev lib32readline5-dev lib32z-dev \</span><br><span class="line">  libgl1-mesa-dev g++-multilib mingw32 tofrodos python-markdown \</span><br><span class="line">  libxml2-utils xsltproc</span><br></pre></td></tr></table></figure>
+
+<p>11.10：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt-get install libx11-dev:i386</span><br></pre></td></tr></table></figure>
+
+<p>10.04：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo ln -s &#x2F;usr&#x2F;lib32&#x2F;mesa&#x2F;libGL.so.1 &#x2F;usr&#x2F;lib32&#x2F;mesa&#x2F;libGL.so</span><br></pre></td></tr></table></figure>
+
+<p>二、下载源码</p>
+<p>1.下载repo：</p>
+<p>repo是Google基于Git推出的一款版本管理工具，用python写的。</p>
+<p>先配置目录：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ mkdir ~&#x2F;bin</span><br><span class="line">$ PATH&#x3D;~&#x2F;bin:$PATH</span><br></pre></td></tr></table></figure>
+
+<p>下载repo并赋予其可执行权限：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ curl https:&#x2F;&#x2F;storage.googleapis.com&#x2F;git-repo-downloads&#x2F;repo &gt; ~&#x2F;bin&#x2F;repo</span><br><span class="line">$ chmod a+x ~&#x2F;bin&#x2F;repo</span><br></pre></td></tr></table></figure>
+
+<p>当然由于众所周知的原因，我们往往无法把repo下到本地。这里提供一个我下载并修改好的下载链接：<a target="_blank" rel="noopener" href="http://jiezhiblog.com/wp-content/uploads/2015/04/repo1.txt">http://jiezhiblog.com/wp-content/uploads/2015/04/repo1.txt</a></p>
+<p>（wp的限制，只能把repo重命名为repo.txt，下载后改回repo即可）</p>
+<p>下载放到~/bin目录下，并修改权限即可：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chmod a+x repo</span><br></pre></td></tr></table></figure>
+
+<p>2.初始化repo</p>
+<p>进入放置源码的目录，如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ mkdir ~&#x2F;android&#x2F;android 4.3_r1</span><br><span class="line">$ cd ~&#x2F;android&#x2F;android 4.3_r1</span><br></pre></td></tr></table></figure>
+
+<p>关键的来了，如果想体验好点，建议国内的从清华大学的镜像源下载：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ repo init -u git:&#x2F;&#x2F;aosp.tuna.tsinghua.edu.cn&#x2F;android&#x2F;platform&#x2F;manifest</span><br></pre></td></tr></table></figure>
+
+<p>或者指定要下载的分支：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ repo init -u git:&#x2F;&#x2F;aosp.tuna.tsinghua.edu.cn&#x2F;android&#x2F;platform&#x2F;manifest -b android-4.3_r1</span><br></pre></td></tr></table></figure>
+
+<p>完成后即可和服务器同步了：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ repo sync</span><br></pre></td></tr></table></figure>
+
+<p>该服务器限制了每个IP并发数，也就是你可以使用：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ repo sync -j4</span><br></pre></td></tr></table></figure>
+
+<p>设置并发数为4.，给别人留有余地。</p>
+<p>现在应该在从服务器下载源码了，但是如果中途有中断了，继续执行<strong>repo sync</strong>即可。</p>
+<p><strong>如何让repo自动在断开后自动下载：</strong></p>
+<p>新建<strong>autorepo.sh</strong>:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">#!&#x2F;bin&#x2F;sh</span><br><span class="line">repo sync</span><br><span class="line">while [ $? -ne 0 ]</span><br><span class="line">do</span><br><span class="line">repo sync</span><br><span class="line">done</span><br></pre></td></tr></table></figure>
+
+<p>然后执行即可：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sh autorepo.sh</span><br></pre></td></tr></table></figure>
+
+<p>如果你之前已经下载了部分AOSP的代码的话，切换到TUNA服务器也很方便，如官网所示：</p>
+<blockquote>
+<p>如果你之前已经通过某种途径获得了 AOSP 的源码(或者你只是 init 这一步完成后)， 你希望以后通过 TUNA 同步 AOSP 部分的代码，只需要将 .repo/manifest.xml 把其中的 aosp 这个 remote 的 fetch 从 <a target="_blank" rel="noopener" href="https://android.googlesource.com/">https://android.googlesource.com</a> 改为 git://aosp.tuna.tsinghua.edu.cn/android/</p>
+</blockquote>
+<p><code>diff&lt;manifest&gt;    &lt;remote  name=&quot;aosp&quot;-           fetch=&quot;https://android.googlesource.com&quot;+           fetch=&quot;git://aosp.tuna.tsinghua.edu.cn/android/&quot;            review=&quot;android-review.googlesource.com&quot; /&gt;    &lt;remote  name=&quot;github&quot;</code></p>
+<p><strong>这个方法也可以用来在同步 Cyanogenmod 代码的时候从 TUNA 同步部分代码</strong></p>
+<p>三、编译：</p>
+<p>当源码下载后，可以看到目录里多出很多源码文件夹：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">[aosp@myserver android4.1_r1]$ ls -hl</span><br><span class="line">total 100K</span><br><span class="line">drwxrwxr-x   3 aosp aosp 4.0K Apr  7 11:27 abi</span><br><span class="line">drwxrwxr-x   9 aosp aosp 4.0K Apr  7 11:27 bionic</span><br><span class="line">drwxrwxr-x   5 aosp aosp 4.0K Apr  7 11:27 bootable</span><br><span class="line">drwxrwxr-x   7 aosp aosp 4.0K Apr  7 11:27 build</span><br><span class="line">drwxrwxr-x  11 aosp aosp 4.0K Apr  7 11:27 cts</span><br><span class="line">drwxrwxr-x  18 aosp aosp 4.0K Apr  7 11:27 dalvik</span><br><span class="line">drwxrwxr-x  19 aosp aosp 4.0K Apr  7 11:27 development</span><br><span class="line">drwxrwxr-x  10 aosp aosp 4.0K Apr  7 11:27 device</span><br><span class="line">drwxrwxr-x   3 aosp aosp 4.0K Apr  7 11:27 docs</span><br><span class="line">drwxrwxr-x 144 aosp aosp 4.0K Apr  7 11:29 external</span><br><span class="line">drwxrwxr-x  14 aosp aosp 4.0K Apr  7 11:32 frameworks</span><br><span class="line">drwxrwxr-x  10 aosp aosp 4.0K Apr  7 11:32 gdk</span><br><span class="line">drwxrwxr-x  10 aosp aosp 4.0K Apr  7 11:32 hardware</span><br><span class="line">drwxrwxr-x  11 aosp aosp 4.0K Apr  7 11:32 libcore</span><br><span class="line">drwxrwxr-x   4 aosp aosp 4.0K Apr  7 11:32 libnativehelper</span><br><span class="line">-r--r--r--   1 aosp aosp   87 Apr  7 11:27 Makefile</span><br><span class="line">drwxrwxr-x   8 aosp aosp 4.0K Apr  7 11:32 ndk</span><br><span class="line">drwxrwxr-x   4 aosp aosp 4.0K Apr  7 14:28 out</span><br><span class="line">drwxrwxr-x   7 aosp aosp 4.0K Apr  7 11:33 packages</span><br><span class="line">drwxrwxr-x   4 aosp aosp 4.0K Apr  7 11:33 pdk</span><br><span class="line">drwxrwxr-x  12 aosp aosp 4.0K Apr  7 11:33 prebuilt</span><br><span class="line">drwxrwxr-x   9 aosp aosp 4.0K Apr  7 11:34 prebuilts</span><br><span class="line">drwxrwxr-x  48 aosp aosp 4.0K Apr  7 11:34 sdk</span><br><span class="line">drwxrwxr-x   9 aosp aosp 4.0K Apr  7 11:34 system</span><br></pre></td></tr></table></figure>
+
+<p>如果你准备在模拟器里运行，则按照如下步骤编译即可，如果你想刷到手机上则还有一些任务要做（见第四步）。</p>
+<p>0.其中由于配置问题，我的代码是放在服务器上编译的:</p>
+<p>由于.repo这个隐藏文件夹里的文件占用空间很大，所以在压缩的时候将其排除：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ tar -zcvf android4.3_r1.tar.gz android4.3_r1&#x2F; --exclude .repo</span><br></pre></td></tr></table></figure>
+
+<p>然后利用scp命令将压缩好的文件上传到服务器：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ scp android4.3_r1.tar.gz username@host:&#x2F;home&#x2F;android&#x2F;</span><br></pre></td></tr></table></figure>
+
+<p>其中username和host是你用户名和服务器地址。</p>
+<p>解压：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ tar -zxvf android4.3_r1.tar.gz &#x2F;</span><br></pre></td></tr></table></figure>
+
+<p>1.初始化：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ source build&#x2F;envsetup.sh</span><br></pre></td></tr></table></figure>
+
+<p>2.使用<strong>lunch</strong>命令选择编译目标，如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ lunch aosp_arm-eng</span><br></pre></td></tr></table></figure>
+
+<p>或者直接lunch，会让你选择编译目标的。</p>
+<p>其中参数说明：</p>
+<table>
+<thead>
+<tr>
+<th>BUILD NAME</th>
+<th>DEVICE</th>
+<th>NOTES</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>aosp_arm</td>
+<td>ARM emulator</td>
+<td>包括所有语言、APP和输入法的配置</td>
+</tr>
+<tr>
+<td>aosp_maguro</td>
+<td>maguro</td>
+<td>运行在Galaxy Nexus GSM/HSPA+ (“maguro”)上</td>
+</tr>
+<tr>
+<td>aosp_panda</td>
+<td>panda</td>
+<td>运行在 PandaBoard (“panda”)上</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>BUILDTYPE</th>
+<th>USE</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>user</td>
+<td>limited access; suited for production（有权限限制，适合产品级）</td>
+</tr>
+<tr>
+<td>userdebug</td>
+<td>preferred for debugging（适合调试）</td>
+</tr>
+<tr>
+<td>eng</td>
+<td>development configuration with additional debugging tools（有额外的调试工具）</td>
+</tr>
+</tbody></table>
+<p>4.3.编译</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ make -j4</span><br></pre></td></tr></table></figure>
+<p><strong>-jN</strong>表示用N个线程来编译，如果你是配置是2CPU，每个CPU有4核，每核可跑俩线程，那么你可以make -j16乃至-j32，这样速度将大大加快。.</p>
+<p>4.成功</p>
+<p>在android4.3_r1/out/target/product/generic目录下可以看到如下文件：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">[aosp@myserver generic]$ ls -lh</span><br><span class="line">total 205M</span><br><span class="line">-rw-rw-r--  1 aosp aosp    7 Apr  7 14:49 android-info.txt</span><br><span class="line">-rw-rw-r--  1 aosp aosp  25K Apr  7 14:48 clean_steps.mk</span><br><span class="line">drwxrwxr-x  4 aosp aosp 4.0K Apr  7 15:19 data</span><br><span class="line">drwxrwxr-x  3 aosp aosp 4.0K Apr  7 15:18 dex_bootjars</span><br><span class="line">-rw-rw-r--  1 aosp aosp  47K Apr  7 15:27 installed-files.txt</span><br><span class="line">drwxrwxr-x 14 aosp aosp 4.0K Apr  7 15:27 obj</span><br><span class="line">-rw-rw-r--  1 aosp aosp  557 Apr  7 14:48 previous_build_config.mk</span><br><span class="line">-rw-rw-r--  1 aosp aosp 163K Apr  7 15:18 ramdisk.img</span><br><span class="line">drwxrwxr-x  8 aosp aosp 4.0K Apr  7 15:18 root</span><br><span class="line">drwxrwxr-x  5 aosp aosp 4.0K Apr  7 15:18 symbols</span><br><span class="line">drwxrwxr-x 12 aosp aosp 4.0K Apr  7 15:27 system</span><br><span class="line">-rw-------  1 aosp aosp 204M Apr  7 15:27 system.img</span><br><span class="line">drwxrwxr-x  3 aosp aosp 4.0K Apr  7 15:05 test</span><br><span class="line">-rw-------  1 aosp aosp  99K Apr  7 15:19 userdata.img</span><br></pre></td></tr></table></figure>
+
+<p>四、刷机</p>
+<p>1.模拟器的话，其实直接运行<strong>emulator</strong>即可运行：</p>
+<p>由于不涉及内核，我的做法是把ramdisk.img、system.img和userdata.img复制到sdk/system-images/android-18/default/armeabi-v7a/目录下替换掉原来的文件。（可以把原来的先备份）<br>然后新建对应的API虚拟机，运行即可。</p>
+<p>2.真机</p>
+<p>真机我是用Google三太子Galaxy Nexus&nbsp;[maguro] (GSM/HSPA+)做的实验，毕竟亲儿子，驱动方面都很好配置。</p>
+<p>a.在第三步编译之前，先把驱动配置好：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line">$ cd ~&#x2F;android&#x2F;anddroid-4.3_r1</span><br><span class="line"></span><br><span class="line">$ wget https:&#x2F;&#x2F;dl.google.com&#x2F;dl&#x2F;android&#x2F;aosp&#x2F;broadcom-maguro-jwr66y-5fa7715b.tgz</span><br><span class="line"></span><br><span class="line">$ tar -zxvf broadcom-maguro-jwr66y-5fa7715b.tgz</span><br><span class="line"></span><br><span class="line">$ .&#x2F;extract-broadcom-maguro.sh # (view the license and then type &quot;I ACCEPT&quot;)</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">$ wget https:&#x2F;&#x2F;dl.google.com&#x2F;dl&#x2F;android&#x2F;aosp&#x2F;imgtec-maguro-jwr66y-b0a4a1ef.tgz</span><br><span class="line"></span><br><span class="line">$ tar -zxvf imgtec-maguro-jwr66y-b0a4a1ef.tgz</span><br><span class="line"></span><br><span class="line">$ .&#x2F;extract-imgtec-maguro.sh # (view the license and then type &quot;I ACCEPT&quot;)</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">$ wget https:&#x2F;&#x2F;dl.google.com&#x2F;dl&#x2F;android&#x2F;aosp&#x2F;invensense-maguro-jwr66y-e0d2e531.tgz</span><br><span class="line"></span><br><span class="line">$ tar -zxvf invensense-maguro-jwr66y-e0d2e531.tgz</span><br><span class="line"></span><br><span class="line">$ .&#x2F;extract-invensense-maguro.sh # (view the license and then type &quot;I ACCEPT&quot;)</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">$ wget https:&#x2F;&#x2F;dl.google.com&#x2F;dl&#x2F;android&#x2F;aosp&#x2F;nxp-maguro-jwr66y-d8ac2804.tgz</span><br><span class="line"></span><br><span class="line">$ tar -zxvf nxp-maguro-jwr66y-d8ac2804.tgz</span><br><span class="line"></span><br><span class="line">$ .&#x2F;extract-nxp-maguro.sh # (view the license and then type &quot;I ACCEPT&quot;)</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">$ wget https:&#x2F;&#x2F;dl.google.com&#x2F;dl&#x2F;android&#x2F;aosp&#x2F;samsung-maguro-jwr66y-fb8f93b6.tgz</span><br><span class="line"></span><br><span class="line">$ tar -zxvf samsung-maguro-jwr66y-fb8f93b6.tgz</span><br><span class="line"></span><br><span class="line">$ .&#x2F;extract-samsung-maguro.sh # (view the license and then type &quot;I ACCEPT&quot;)</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">$ wget https:&#x2F;&#x2F;dl.google.com&#x2F;dl&#x2F;android&#x2F;aosp&#x2F;widevine-maguro-jwr66y-c49927ce.tgz</span><br><span class="line"></span><br><span class="line">$ tar -zxvf widevine-maguro-jwr66y-c49927ce.tgz</span><br><span class="line"></span><br><span class="line">$ .&#x2F;extract-widevine-maguro.sh # (view the license and then type &quot;I ACCEPT&quot;)</span><br></pre></td></tr></table></figure>
+
+<p>然后按照第三步编译即可。</p>
+<p>b.连接手机，打开USB调试，进入bootloader模式：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ adb reboot bootloader</span><br></pre></td></tr></table></figure>
+
+<p>如果bootloader被锁住的话，先解锁：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ fastboot oem unlock</span><br></pre></td></tr></table></figure>
+
+<p>然后进入system.img等文件的目录：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ fastboot flash boot boot.img</span><br><span class="line"></span><br><span class="line">$ fastboot flash system system.img</span><br><span class="line"></span><br><span class="line">$ fastboot flash userdata userdata.img</span><br></pre></td></tr></table></figure>
+
+<p>然后重启即可。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/android/" rel="tag"># android</a>
+              <a href="/tags/aosp/" rel="tag"># aosp</a>
+              <a href="/tags/%E6%BA%90%E7%A0%81/" rel="tag"># 源码</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2015/04/15/Mac%E4%B8%8Apython%E5%AE%89%E8%A3%85%E7%AC%AC%E4%B8%89%E6%96%B9%E5%BA%93/" rel="prev" title="Mac上python安装第三方库">
+      <i class="fa fa-chevron-left"></i> Mac上python安装第三方库
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2015/04/20/Ubuntu_64%E4%BD%8Dadb%E6%97%A0%E6%B3%95%E4%BD%BF%E7%94%A8%E9%97%AE%E9%A2%98%E7%9A%84%E8%A7%A3%E5%86%B3/" rel="next" title="Ubuntu 64位adb无法使用问题的解决">
+      Ubuntu 64位adb无法使用问题的解决 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Jiezhi</p>
+  <div class="site-description" itemprop="description">努力地成为一个大牛</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">82</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">categories</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">101</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Jiezhi" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Jiezhi" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:Jiezhi.G+blog@gmail.com" title="E-Mail → mailto:Jiezhi.G+blog@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jiezhi</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

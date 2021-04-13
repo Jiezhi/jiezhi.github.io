@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"jiezhi.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"apiKey":"778170cba39be8aded6d4bb919ee084f","indexName":"Jiezhi Blog","hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="因为 CDH 社区版不能使用 Navigator，所以需要自己集成一个Apache Atlas。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CDH6配置 Atlas，及 Hive Hook">
+<meta property="og:url" content="https://jiezhi.github.io/2020/03/31/atlas2-cdh6-hive-hook/index.html">
+<meta property="og:site_name" content="Jiezhi&#39;s Blog">
+<meta property="og:description" content="因为 CDH 社区版不能使用 Navigator，所以需要自己集成一个Apache Atlas。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-03-31T15:03:57.000Z">
+<meta property="article:modified_time" content="2021-04-13T08:33:13.621Z">
+<meta property="article:author" content="Jiezhi">
+<meta property="article:tag" content="Hive">
+<meta property="article:tag" content="CDH">
+<meta property="article:tag" content="Atlas">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://jiezhi.github.io/2020/03/31/atlas2-cdh6-hive-hook/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-cn'
+  };
+</script>
+
+  <title>CDH6配置 Atlas，及 Hive Hook | Jiezhi's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Jiezhi's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">好记性不如烂笔头</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags<span class="badge">101</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories<span class="badge">29</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives<span class="badge">82</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+    <link itemprop="mainEntityOfPage" href="https://jiezhi.github.io/2020/03/31/atlas2-cdh6-hive-hook/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Jiezhi">
+      <meta itemprop="description" content="努力地成为一个大牛">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Jiezhi's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          CDH6配置 Atlas，及 Hive Hook
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-03-31 15:03:57" itemprop="dateCreated datePublished" datetime="2020-03-31T15:03:57+00:00">2020-03-31</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-04-13 08:33:13" itemprop="dateModified" datetime="2021-04-13T08:33:13+00:00">2021-04-13</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/BigData/" itemprop="url" rel="index"><span itemprop="name">BigData</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>因为 CDH 社区版不能使用 <a target="_blank" rel="noopener" href="https://docs.cloudera.com/documentation/enterprise/6/6.3/topics/datamgmt_intro.html#intro_to_cloudera_navigator_data_mgmt">Navigator</a>，所以需要自己集成一个<a target="_blank" rel="noopener" href="https://docs.cloudera.com/documentation/enterprise/6/6.3/topics/datamgmt_intro.html#intro_to_cloudera_navigator_data_mgmt">Apache Atlas</a>。</p>
+<span id="more"></span>
+
+<h1 id="版本说明"><a href="#版本说明" class="headerlink" title="版本说明"></a>版本说明</h1><p>20200818 Updated: 目前最新版是2.1.0，如果 Hive 版本是3.1一下的，可能存在不兼容问题。<br>在编译前修改下源码，参考<a href="/2020/08/18/atlas2-hive-hook-error/">这篇</a>。</p>
+<p>Atlas: 2.0 <a target="_blank" rel="noopener" href="https://atlas.apache.org/#/Downloads">Download</a></p>
+<p>CDH: 6.3.1 (Parcels)</p>
+<h2 id="其它"><a href="#其它" class="headerlink" title="其它"></a>其它</h2><p>Atlas 依赖 Solr（或 ES）、HBase和 Kafka 来工作，先确保 CDH 这3个已经开启，或者编译 Atlas代码时集成进去（生产不建议）。</p>
+<h1 id="编译"><a href="#编译" class="headerlink" title="编译"></a>编译</h1><p>从官网下载Atlas 2.0的代码，然后进行编译，详见官网（基本没啥坑，除非 maven 版本太低，去下一个最新的即可）</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">tar xvfz apache-atlas-2.0.0-sources.tar.gz</span><br><span class="line"><span class="built_in">cd</span> apache-atlas-sources-2.0.0/</span><br><span class="line"><span class="built_in">export</span> MAVEN_OPTS=<span class="string">&quot;-Xms2g -Xmx2g&quot;</span></span><br><span class="line">mvn clean -DskipTests install</span><br><span class="line">mvn clean -DskipTests package -Pdist</span><br></pre></td></tr></table></figure>
+
+<p>编译好的位置在<code>distro/target/</code>下</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">[root@node1 target]<span class="comment"># ll distro/target</span></span><br><span class="line">total 738M</span><br><span class="line">drwxr-xr-x. 3 root root   32 Mar 31 10:08 apache-atlas-2.0.0-bin</span><br><span class="line">-rw-r--r--. 1 root root 360M Mar 31 10:08 apache-atlas-2.0.0-bin.tar.gz</span><br><span class="line">drwxr-xr-x. 3 root root   44 Mar 31 10:08 apache-atlas-2.0.0-falcon-hook</span><br><span class="line">-rw-r--r--. 1 root root 8.8M Mar 31 10:08 apache-atlas-2.0.0-falcon-hook.tar.gz</span><br><span class="line">drwxr-xr-x. 3 root root   43 Mar 31 10:08 apache-atlas-2.0.0-hbase-hook</span><br><span class="line">-rw-r--r--. 1 root root  11M Mar 31 10:08 apache-atlas-2.0.0-hbase-hook.tar.gz</span><br><span class="line">drwxr-xr-x. 3 root root   42 Mar 31 10:08 apache-atlas-2.0.0-hive-hook</span><br><span class="line">-rw-r--r--. 1 root root  16M Mar 31 10:08 apache-atlas-2.0.0-hive-hook.tar.gz</span><br><span class="line">drwxr-xr-x. 3 root root   43 Mar 31 10:08 apache-atlas-2.0.0-kafka-hook</span><br><span class="line">-rw-r--r--. 1 root root 8.8M Mar 31 10:08 apache-atlas-2.0.0-kafka-hook.tar.gz</span><br><span class="line">drwxr-xr-x. 3 root root   32 Mar 31 10:08 apache-atlas-2.0.0-server</span><br><span class="line">-rw-r--r--. 1 root root 260M Mar 31 10:08 apache-atlas-2.0.0-server.tar.gz</span><br><span class="line">-rw-r--r--. 1 root root  11M Mar 31 10:08 apache-atlas-2.0.0-sources.tar.gz</span><br><span class="line">drwxr-xr-x. 3 root root   43 Mar 31 10:08 apache-atlas-2.0.0-sqoop-hook</span><br><span class="line">-rw-r--r--. 1 root root 8.8M Mar 31 10:08 apache-atlas-2.0.0-sqoop-hook.tar.gz</span><br><span class="line">drwxr-xr-x. 3 root root   43 Mar 31 10:08 apache-atlas-2.0.0-storm-hook</span><br><span class="line">-rw-r--r--. 1 root root  57M Mar 31 10:08 apache-atlas-2.0.0-storm-hook.tar.gz</span><br><span class="line">drwxr-xr-x. 2 root root    6 Mar 31 10:08 archive-tmp</span><br><span class="line">-rw-r--r--. 1 root root  94K Mar 31 10:08 atlas-distro-2.0.0.jar</span><br><span class="line">drwxr-xr-x. 2 root root 4.0K Mar 31 10:08 bin</span><br><span class="line">drwxr-xr-x. 5 root root  231 Mar 31 10:08 conf</span><br><span class="line">drwxr-xr-x. 2 root root   28 Mar 31 10:08 maven-archiver</span><br><span class="line">drwxr-xr-x. 3 root root   22 Mar 31 10:08 maven-shared-archive-resources</span><br><span class="line">drwxr-xr-x. 2 root root   55 Mar 31 10:08 META-INF</span><br><span class="line">-rw-r--r--. 1 root root 3.9K Mar 31 10:08 rat.txt</span><br><span class="line">drwxr-xr-x. 3 root root   22 Mar 31 10:08 test-classes</span><br></pre></td></tr></table></figure>
+<p>我们直接使用<code>apache-atlas-2.0.0-bin.tar.gz</code>和需要 hook 的组件如：<code>apache-atlas-2.0.0-hive-hook.tar.gz</code> 、<code>apache-atlas-2.0.0-sqoop-hook.tar.gz</code></p>
+<h2 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h2><p>将需要的 tar.gz文件解压到指定目录如<code>/opt/atlas</code></p>
+<p>改几个关键的配置<code>vim conf/atlas-application.properties</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line">atlas.graph.storage.hostname=node1:2181,node2:2181,node3:2181</span><br><span class="line"></span><br><span class="line"><span class="comment">#Solr</span></span><br><span class="line"><span class="comment">#Solr cloud mode properties</span></span><br><span class="line">atlas.graph.index.search.solr.mode=cloud</span><br><span class="line">atlas.graph.index.search.solr.zookeeper-url=node1:2181/solr,node2:2181/solr,node3:2181/solr</span><br><span class="line">atlas.graph.index.search.solr.zookeeper-connect-timeout=60000</span><br><span class="line">atlas.graph.index.search.solr.zookeeper-session-timeout=60000</span><br><span class="line">atlas.graph.index.search.solr.wait-searcher=<span class="literal">true</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#########  Notification Configs  #########</span></span><br><span class="line">atlas.notification.embedded=<span class="literal">false</span></span><br><span class="line">atlas.kafka.data=<span class="variable">$&#123;sys:atlas.home&#125;</span>/data/kafka</span><br><span class="line">atlas.kafka.zookeeper.connect=node1:2181,node2:2181,node3:2181</span><br><span class="line">atlas.kafka.bootstrap.servers=node1:9092,node2:9092,node3:9092</span><br><span class="line">atlas.kafka.zookeeper.session.timeout.ms=4000</span><br><span class="line">atlas.kafka.zookeeper.connection.timeout.ms=2000</span><br><span class="line">atlas.kafka.zookeeper.sync.time.ms=20</span><br><span class="line">atlas.kafka.auto.commit.interval.ms=1000</span><br><span class="line">atlas.kafka.hook.group.id=atlas</span><br><span class="line"></span><br><span class="line"><span class="comment">#########  Server Properties  #########</span></span><br><span class="line">atlas.rest.address=http://0.0.0.0:21001</span><br><span class="line"></span><br><span class="line"><span class="comment">#########  Entity Audit Configs  #########</span></span><br><span class="line">atlas.audit.hbase.tablename=apache_atlas_entity_audit</span><br><span class="line">atlas.audit.zookeeper.session.timeout.ms=1000</span><br><span class="line">atlas.audit.hbase.zookeeper.quorum=node1:2181,node2:2181,node3:2181</span><br><span class="line"></span><br><span class="line"><span class="comment">## Server port configuration （这边使用210001，避免端口和 Impala 的冲突）</span></span><br><span class="line">atlas.server.http.port=21001</span><br><span class="line"><span class="comment">#atlas.server.https.port=21443</span></span><br><span class="line"></span><br><span class="line"><span class="comment">### 以下为新增配置，按需添加</span></span><br><span class="line"><span class="comment">######### Hive Hook Configs #######</span></span><br><span class="line"></span><br><span class="line">atlas.hook.hive.synchronous=<span class="literal">false</span></span><br><span class="line"></span><br><span class="line">atlas.hook.hive.numRetries=3</span><br><span class="line"></span><br><span class="line">atlas.hook.hive.queueSize=10000</span><br><span class="line"></span><br><span class="line">atlas.cluster.name=primary</span><br><span class="line"></span><br><span class="line"><span class="comment">######### Sqoop Hook Configs #######</span></span><br><span class="line">atlas.hook.sqoop.synchronous=<span class="literal">false</span> <span class="comment"># whether to run the hook synchronously. false recommended to avoid delays in Sqoop operation completion. Default: false</span></span><br><span class="line">atlas.hook.sqoop.numRetries=3      <span class="comment"># number of retries for notification failure. Default: 3</span></span><br><span class="line">atlas.hook.sqoop.queueSize=10000   <span class="comment"># queue size for the threadpool. Default: 10000</span></span><br></pre></td></tr></table></figure>
+<p>这时候可以尝试启动下<code>./bin/atlas_start.py</code>并看一下 log <code>tail -f logs/application.log</code>，我这边遇到了问题：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">2020-03-31 11:42:57,437 INFO  - [main:] ~ Creating indexes <span class="keyword">for</span> graph. (GraphBackedS</span><br><span class="line">earchIndexer:248)</span><br><span class="line">2020-03-31 11:42:58,605 INFO  - [main:] ~ Created index : vertex_index (GraphBacked</span><br><span class="line">SearchIndexer:253)</span><br><span class="line">2020-03-31 11:42:58,692 INFO  - [main:] ~ Created index : edge_index (GraphBackedSe</span><br><span class="line">archIndexer:259)</span><br><span class="line">2020-03-31 11:42:58,700 INFO  - [main:] ~ Created index : fulltext_index (GraphBackedSearchIndexer:265)</span><br><span class="line">2020-03-31 11:42:58,824 ERROR - [main:] ~ GraphBackedSearchIndexer.initialize() failed (GraphBackedSearchIndexer:307)</span><br><span class="line">org.apache.solr.client.solrj.impl.HttpSolrClient<span class="variable">$RemoteSolrException</span>: Error from server at http://BD-Cal-Pro-02:8983/solr: Can not find the specified config <span class="built_in">set</span>: vertex_index</span><br><span class="line">        at org.apache.solr.client.solrj.impl.HttpSolrClient.executeMethod(HttpSolrClient.java:627)</span><br><span class="line">        at org.apache.solr.client.solrj.impl.HttpSolrClient.request(HttpSolrClient.java:253)</span><br></pre></td></tr></table></figure>
+<p>不知道为何 atlas 没能在 solr 创建需要的数据，只能手动创建了</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">solrctl instancedir --create atlas conf/solr/</span><br><span class="line"></span><br><span class="line">solrctl collection --create vertex_index -s 1 -c atlas -r 1</span><br><span class="line"></span><br><span class="line">solrctl collection --create edge_index -s 1 -c atlas -r 1</span><br><span class="line"></span><br><span class="line">solrctl collection --create fulltext_index -s 1 -c atlas -r 1</span><br></pre></td></tr></table></figure>
+
+<p>至此 atlas 就可以正常启动了。</p>
+<h2 id="Jar-包配置"><a href="#Jar-包配置" class="headerlink" title="Jar 包配置"></a>Jar 包配置</h2><p>把配置复制到 hook/hive 下，然后打包进atlas-plugin-classloader-2.0.0.jar</p>
+<p><code>zip -u atlas-plugin-classloader-2.0.0.jar atlas-application.properties</code></p>
+<p>有的教程是直接跨目录压缩进去了，但实际执行会出错。</p>
+<h1 id="Hive-Hook"><a href="#Hive-Hook" class="headerlink" title="Hive Hook"></a>Hive Hook</h1><p>这边需要去CM 中 Hive 配置页面修改：</p>
+<h3 id="Hive-Auxiliary-JARs-Directory"><a href="#Hive-Auxiliary-JARs-Directory" class="headerlink" title="Hive Auxiliary JARs Directory"></a>Hive Auxiliary JARs Directory</h3><blockquote>
+<p>${ATLAS_HOME}/hook/hive</p>
+</blockquote>
+<h3 id="Gateway-Client-Environment-Advanced-Configuration-Snippet-Safety-Valve-for-hive-env-sh"><a href="#Gateway-Client-Environment-Advanced-Configuration-Snippet-Safety-Valve-for-hive-env-sh" class="headerlink" title="Gateway Client Environment Advanced Configuration Snippet (Safety Valve) for hive-env.sh"></a>Gateway Client Environment Advanced Configuration Snippet (Safety Valve) for <a target="_blank" rel="noopener" href="http://hive-env.sh/">hive-env.sh</a></h3><blockquote>
+<p>HIVE_AUX_JARS_PATH=${ATLAS_HOME}/hook/hive</p>
+</blockquote>
+<h3 id="HiveServer2-Advanced-Configuration-Snippet-Safety-Valve-for-hive-site-xml"><a href="#HiveServer2-Advanced-Configuration-Snippet-Safety-Valve-for-hive-site-xml" class="headerlink" title="HiveServer2 Advanced Configuration Snippet (Safety Valve) for hive-site.xml"></a>HiveServer2 Advanced Configuration Snippet (Safety Valve) for hive-site.xml</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&lt;property&gt;</span><br><span class="line">&lt;name&gt;hive.exec.post.hooks&lt;/name&gt;</span><br><span class="line">&lt;value&gt;org.apache.atlas.hive.hook.HiveHook&lt;/value&gt;</span><br><span class="line">&lt;/property&gt;</span><br><span class="line"></span><br><span class="line">&lt;property&gt;</span><br><span class="line">&lt;name&gt;hive.reloadable.aux.jars.path&lt;/name&gt;</span><br><span class="line">&lt;value&gt;<span class="variable">$&#123;ATLAS_HOME&#125;</span>/hook/hive/&lt;/value&gt;</span><br><span class="line">&lt;/property&gt;</span><br><span class="line"></span><br><span class="line">&lt;property&gt;</span><br><span class="line">&lt;name&gt;atlas.cluster.name&lt;/name&gt;</span><br><span class="line">&lt;value&gt;primary&lt;/value&gt;</span><br><span class="line">&lt;/property&gt;</span><br></pre></td></tr></table></figure>
+<p>配置好后重启 Hive，创建一张测试表可以看到Atlas 中会出现该表的记录。</p>
+<h2 id="导入历史数据"><a href="#导入历史数据" class="headerlink" title="导入历史数据"></a>导入历史数据</h2><p>如果需要历史数据，则可以通过 hook-bin下面的 import_hive.sh 导入即可，主要要把 atlas-application.properties 复制到 HIVE_CONF_HOME 下面（/etc/hive/conf）。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Hive/" rel="tag"># Hive</a>
+              <a href="/tags/CDH/" rel="tag"># CDH</a>
+              <a href="/tags/Atlas/" rel="tag"># Atlas</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/01/17/run-sqoop-with-oozie-in-hue/" rel="prev" title="CDH中sqoop无法在 hue 中正确执行的问题">
+      <i class="fa fa-chevron-left"></i> CDH中sqoop无法在 hue 中正确执行的问题
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/06/03/cdh-flume-custom-interceptor/" rel="next" title="CDH 中 Flume 配置及拦截器的实现">
+      CDH 中 Flume 配置及拦截器的实现 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%89%88%E6%9C%AC%E8%AF%B4%E6%98%8E"><span class="nav-number">1.</span> <span class="nav-text">版本说明</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B6%E5%AE%83"><span class="nav-number">1.1.</span> <span class="nav-text">其它</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BC%96%E8%AF%91"><span class="nav-number">2.</span> <span class="nav-text">编译</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE"><span class="nav-number">2.1.</span> <span class="nav-text">配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Jar-%E5%8C%85%E9%85%8D%E7%BD%AE"><span class="nav-number">2.2.</span> <span class="nav-text">Jar 包配置</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Hive-Hook"><span class="nav-number">3.</span> <span class="nav-text">Hive Hook</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Hive-Auxiliary-JARs-Directory"><span class="nav-number">3.0.1.</span> <span class="nav-text">Hive Auxiliary JARs Directory</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Gateway-Client-Environment-Advanced-Configuration-Snippet-Safety-Valve-for-hive-env-sh"><span class="nav-number">3.0.2.</span> <span class="nav-text">Gateway Client Environment Advanced Configuration Snippet (Safety Valve) for hive-env.sh</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HiveServer2-Advanced-Configuration-Snippet-Safety-Valve-for-hive-site-xml"><span class="nav-number">3.0.3.</span> <span class="nav-text">HiveServer2 Advanced Configuration Snippet (Safety Valve) for hive-site.xml</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%BC%E5%85%A5%E5%8E%86%E5%8F%B2%E6%95%B0%E6%8D%AE"><span class="nav-number">3.1.</span> <span class="nav-text">导入历史数据</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Jiezhi</p>
+  <div class="site-description" itemprop="description">努力地成为一个大牛</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">82</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">categories</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">101</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Jiezhi" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Jiezhi" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:Jiezhi.G+blog@gmail.com" title="E-Mail → mailto:Jiezhi.G+blog@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jiezhi</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

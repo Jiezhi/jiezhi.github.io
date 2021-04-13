@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"jiezhi.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"apiKey":"778170cba39be8aded6d4bb919ee084f","indexName":"Jiezhi Blog","hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="有 SQL 基础的话，差不多一天可以看完。这里把我看这本书做的笔记分享一下（从 Notion 里迁移出来）">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《Apache Hive Cookbook》读书笔记">
+<meta property="og:url" content="https://jiezhi.github.io/2019/02/19/note-hive-cookbook/index.html">
+<meta property="og:site_name" content="Jiezhi&#39;s Blog">
+<meta property="og:description" content="有 SQL 基础的话，差不多一天可以看完。这里把我看这本书做的笔记分享一下（从 Notion 里迁移出来）">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jiezhi.github.io/2019/02/19/note-hive-cookbook/cover.jpg">
+<meta property="og:image" content="https://jiezhi.github.io/2019/02/19/note-hive-cookbook/1.png">
+<meta property="article:published_time" content="2019-02-19T17:26:42.000Z">
+<meta property="article:modified_time" content="2021-04-13T08:33:13.637Z">
+<meta property="article:author" content="Jiezhi">
+<meta property="article:tag" content="Hive">
+<meta property="article:tag" content="Big Data">
+<meta property="article:tag" content="Note">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jiezhi.github.io/2019/02/19/note-hive-cookbook/cover.jpg">
+
+<link rel="canonical" href="https://jiezhi.github.io/2019/02/19/note-hive-cookbook/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-cn'
+  };
+</script>
+
+  <title>《Apache Hive Cookbook》读书笔记 | Jiezhi's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Jiezhi's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">好记性不如烂笔头</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags<span class="badge">101</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories<span class="badge">29</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives<span class="badge">82</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+    <link itemprop="mainEntityOfPage" href="https://jiezhi.github.io/2019/02/19/note-hive-cookbook/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Jiezhi">
+      <meta itemprop="description" content="努力地成为一个大牛">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Jiezhi's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          《Apache Hive Cookbook》读书笔记
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-02-19 17:26:42" itemprop="dateCreated datePublished" datetime="2019-02-19T17:26:42+00:00">2019-02-19</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-04-13 08:33:13" itemprop="dateModified" datetime="2021-04-13T08:33:13+00:00">2021-04-13</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Hive/" itemprop="url" rel="index"><span itemprop="name">Hive</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>有 SQL 基础的话，差不多一天可以看完。<br>这里把我看这本书做的笔记分享一下（从 <a target="_blank" rel="noopener" href="https://www.notion.so/?r=507f808e5cb544809dfe98d930ee2cae">Notion</a> 里迁移出来）</p>
+<span id="more"></span>
+<img src="/2019/02/19/note-hive-cookbook/cover.jpg" class="" title="cover">
+<h1 id="Developing-Hive"><a href="#Developing-Hive" class="headerlink" title="Developing Hive"></a>Developing Hive</h1><h2 id="Deploying-Hive-Metastore"><a href="#Deploying-Hive-Metastore" class="headerlink" title="Deploying Hive Metastore"></a>Deploying Hive Metastore</h2><ul>
+<li><p>The Hive table and database definitions and mapping to the data in HDFS is stored in a metastore.</p>
+</li>
+<li><p>A metastore is a central repository for Hive metadata. Consists two main components:</p>
+<ul>
+<li>Services to which the client connects and queries the metastore</li>
+<li>A backing database to store the metadata</li>
+</ul>
+</li>
+<li><p>Configure:</p>
+<ul>
+<li>An <strong>embedded</strong> metastore</li>
+<li>A <strong>local</strong> metastore</li>
+<li>A <strong>remote</strong> metastore<img src="/2019/02/19/note-hive-cookbook/1.png" class="" title="hive-service"></li>
+</ul>
+  <!-- ![](/hive-cookbook-hive-service.png) -->
+
+<p>  HIVE Service JVM</p>
+</li>
+</ul>
+<h1 id="Services-in-Hive"><a href="#Services-in-Hive" class="headerlink" title="Services in Hive"></a>Services in Hive</h1><h2 id="HiveServer2"><a href="#HiveServer2" class="headerlink" title="HiveServer2"></a>HiveServer2</h2><blockquote>
+<p>HiveServer2 is an enhancement of HiveServer provided in earlier versions of Hive.HiveServer’s limitations of <strong>concurrency</strong> and <strong>authentication</strong> is resolved in HiveServer2. HiveServer2 is based on <strong>Thrift RPC</strong>.It supports multiple types of clients, including JDBC and ODBC.</p>
+</blockquote>
+<h2 id="HiveServer2-High-Availability"><a href="#HiveServer2-High-Availability" class="headerlink" title="HiveServer2 High Availability"></a>HiveServer2 High Availability</h2><ul>
+<li><strong>ZooKeeper</strong></li>
+</ul>
+<h2 id="Hive-metastore-service"><a href="#Hive-metastore-service" class="headerlink" title="Hive metastore service"></a>Hive metastore service</h2><ul>
+<li>In Hive, the data is stored in <strong>HDFS</strong> and the table, database, schema, and the HQL definitions are stored in a <strong>metastore</strong>.</li>
+<li>The metastore could be any RDBMS database, such as MYSQL or Oracle.</li>
+<li>Hive creates a database and a set of tables in metastore to store HiveQL definitions.</li>
+</ul>
+<h2 id="Hue"><a href="#Hue" class="headerlink" title="Hue"></a>Hue</h2><h1 id="Understanding-the-Hive-Data-Model"><a href="#Understanding-the-Hive-Data-Model" class="headerlink" title="Understanding the Hive Data Model"></a>Understanding the Hive Data Model</h1><h2 id="Intruduction"><a href="#Intruduction" class="headerlink" title="Intruduction"></a>Intruduction</h2><ul>
+<li>Data types<ul>
+<li>Primitive data types<ul>
+<li>Numeric data types</li>
+<li>String data types</li>
+<li>Date/Time data type</li>
+<li>Miscellaneous data types<ul>
+<li>Boolean</li>
+<li>Binary</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Complex data types<ul>
+<li>STRUCT</li>
+<li>MAP</li>
+<li>ARRAY</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="Partitioning"><a href="#Partitioning" class="headerlink" title="Partitioning"></a>Partitioning</h2><blockquote>
+<p>Partitioning in Hive is used to increase query performance.</p>
+</blockquote>
+<ul>
+<li><p><strong>Mnaged</strong> table</p>
+<blockquote>
+<p>In a managed table, if you delete a talbe, then the data of that table will also get deleted. Similarly, if you delete a partition, then the data of that partition will also get deleted.</p>
+</blockquote>
+<pre><code>  CREATE TABLE customer(id STRING, name STRING, gender STRING) 
+  PARTITIONED BY (country STRING, state STRING);
+</code></pre>
+<ul>
+<li>By setting the value of <code>hive.mapred.mode</code> to strict, it will prevent running risky queries.</li>
+<li>Loading data in a managed partitioned table<ul>
+<li>Static Partitioning</li>
+<li>Dynamic Partitioning</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>External</strong> table</p>
+<blockquote>
+<p>Patitioning external tables works in the same way as in managed tables. Except this in the external table, when you delete a partition, the data file doesn’t get deleted.</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="Bucketing"><a href="#Bucketing" class="headerlink" title="Bucketing"></a>Bucketing</h2><blockquote>
+<p>Bucketing is a technique that allows you to decompose your data into more manageable parts, that is, fix the number of buckets.</p>
+</blockquote>
+<ul>
+<li><p>Usually, partitioning provides a way of segregating the data of a Hive table into multiple files or directories.</p>
+</li>
+<li><p>Partitioning doesn’t perform well if there is a large number of partitions.</p>
+</li>
+<li><p>Bucketing concept is based on the hashing principle, where same type of keys are always sent to the same bucket.</p>
+<p>  <code>Bucket number = hash_function(bucketing_column) mod num_buckets</code></p>
+<p>  <code>set hive.enforce.bucketing=true;</code></p>
+</li>
+<li><p>Two bullet points:</p>
+<ul>
+<li>In partitioning, a column defined as a partitioned column is not included in a schema columns of a Hive table. But in bucketing, a column defined as a bucketed column is included in the schema columns of the Hive table.</li>
+<li>We cannot use the <code>LOAD DATA</code> statement to load the data into the bucketed table as we do in partitioned table. Rather, we have to use the <code>INSERT</code> statements to insert data by selecting data from some other table.</li>
+</ul>
+<h1 id="Hive-Data-Definition-Language-DDL"><a href="#Hive-Data-Definition-Language-DDL" class="headerlink" title="Hive Data Definition Language(DDL)"></a>Hive Data Definition Language(DDL)</h1><h2 id="Creating-tables"><a href="#Creating-tables" class="headerlink" title="Creating tables"></a>Creating tables</h2><ul>
+<li>The <code>LIKE</code> clause in a create table command creates a copy of an existing table with a different name and without the data. It just creates a structure like that of an existing table without copying its data.</li>
+<li>Parameters:<ul>
+<li>[TEMPORARY]</li>
+<li>[EXTERNAL]</li>
+<li>[IF NOT EXISTS]</li>
+<li>[PARTITIONED BY]</li>
+<li>[CLUSTERED BY]</li>
+<li>[SKEWED BY]: 解决数据倾斜问题，较多的值被分隔成多个文件，其余的值分到其他文件中。</li>
+<li>…</li>
+</ul>
+</li>
+</ul>
+<h2 id="Creating-views"><a href="#Creating-views" class="headerlink" title="Creating views"></a>Creating views</h2><blockquote>
+<p>A <code>view</code> is a virtual table that acts as a window to the dat for the underlying table commonly known as the <code>base</code> table. It consists of rows and columns but no physical data. So when a <code>view</code> is accessed, the underlying <code>base</code> table is queried for the output.</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="HCatalog"><a href="#HCatalog" class="headerlink" title="HCatalog"></a>HCatalog</h2><blockquote>
+<p><code>HCatalog</code> is a storage management tool that enables framworks other than Hive to leverage a data model to read and write data. HCatalog tables provide an abstraction on the data format in HDFS and allow frameworks such as <code>PIG</code> and <code>MapReduce</code> to use the data without being concerned about the data format, such as <code>RC</code>, <code>ORC</code>, and text files.</p>
+</blockquote>
+<ul>
+<li><code>HCatInputFormat</code> and <code>HCatOutputFormat</code>, which are the implementations of Hadoop <code>InputFormat</code> and <code>OutputFormat</code>, are the interfaces provided to <code>PIG</code> and <code>MapReduce</code>.</li>
+</ul>
+<h2 id="WebHCat"><a href="#WebHCat" class="headerlink" title="WebHCat"></a>WebHCat</h2><blockquote>
+<p>WebHCat, formerly called Templeton, allow access to the HCatalog service using REST APIs.</p>
+</blockquote>
+<h1 id="Hive-Data-Manipulation-Language-DML"><a href="#Hive-Data-Manipulation-Language-DML" class="headerlink" title="Hive Data Manipulation Language(DML)"></a>Hive Data Manipulation Language(DML)</h1><h1 id="Hive-Extensibility-Features"><a href="#Hive-Extensibility-Features" class="headerlink" title="Hive Extensibility Features"></a>Hive Extensibility Features</h1><h2 id="Serialization-and-deserialization-formats-and-data-types"><a href="#Serialization-and-deserialization-formats-and-data-types" class="headerlink" title="Serialization and deserialization formats and data types"></a>Serialization and deserialization formats and data types</h2><ul>
+<li>LazySimpleSerDe, the default SerDes format of Hive.</li>
+<li>RegexSerDe</li>
+<li>AvroSerDe</li>
+<li>OrcSerDe</li>
+<li>ParquetHiveSerDe</li>
+<li>JSONSerDe</li>
+<li>CSVSerDe</li>
+</ul>
+<h2 id="Exploring-views"><a href="#Exploring-views" class="headerlink" title="Exploring views"></a>Exploring views</h2><ul>
+<li>A view is treated as a table in Hive</li>
+</ul>
+<h2 id="Exploring-indexes"><a href="#Exploring-indexes" class="headerlink" title="Exploring indexes"></a>Exploring indexes</h2><ul>
+<li>Indexes are useful for increasing the performance of frequent queries based on certain columns.</li>
+</ul>
+<h2 id="Hive-partitioning"><a href="#Hive-partitioning" class="headerlink" title="Hive partitioning"></a>Hive partitioning</h2><ul>
+<li>Static partitioning</li>
+<li>Dynamic partitioning</li>
+</ul>
+<h2 id="Creating-buckets-in-Hive"><a href="#Creating-buckets-in-Hive" class="headerlink" title="Creating buckets in Hive"></a>Creating buckets in Hive</h2><pre><code>CREATE table sales_buck (id int, fname string, ...) 
+clustered by (id) into 50 buckets row format delimited fields
+terminated by &#39;\t&#39;;
+
+set hive.enforce.bucketing=true;
+
+insert into table sales_buck select * from sales;
+</code></pre>
+<h2 id="Analytics-functions-in-Hive"><a href="#Analytics-functions-in-Hive" class="headerlink" title="Analytics functions in Hive"></a>Analytics functions in Hive</h2><p><em>see page 122</em></p>
+<ul>
+<li><p>RANK</p>
+<blockquote>
+<p>It is similar to ROW_NUMBER, but the equal rows are ranked with the same number.</p>
+</blockquote>
+</li>
+<li><p>DENSE_RANK</p>
+<blockquote>
+<p>In a normal RANK function, we see a gap between the numbers in rows. DENSE_RANK is a function with no gap.</p>
+</blockquote>
+</li>
+<li><p>ROW_NUMBER</p>
+<blockquote>
+<p>This function will provide a unique number to each row in resultset based on the ORDER BY clause within the PARTITION.</p>
+</blockquote>
+</li>
+<li><p>PERCENT_RANK</p>
+<blockquote>
+<p>It is very similar to the CUME_DIST function. It returns a value from 0 to 1 inclusive.</p>
+</blockquote>
+</li>
+<li><p>CUME_DIST(Cumulative distribution)</p>
+<blockquote>
+<p>It computes the relative postion of a column value in a group.</p>
+</blockquote>
+</li>
+<li><p>NTILE</p>
+<blockquote>
+<p>NTILE distributes the number of rows in a partition into a certain number of groups.</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="Windowing-in-Hive"><a href="#Windowing-in-Hive" class="headerlink" title="Windowing in Hive"></a>Windowing in Hive</h2><p><em>see page 126</em></p>
+<blockquote>
+<p>Windowing in Hive allows an analyst to creagte a window of data to operate aggregation and other analytical functions, such as LEAD and LAG.</p>
+</blockquote>
+<ul>
+<li><p>Partition specification</p>
+<p>  It includes a column reference from the table. It could not be any aggregation or other window specification.</p>
+</li>
+<li><p>Order specification</p>
+<p>  It comprises a combination of one or more columns.</p>
+<ul>
+<li><p>Handling NULLs</p>
+<p>  There is no support for Nulls first or last specification. In Hive, Nulls are returned first.</p>
+</li>
+</ul>
+</li>
+<li><p>Window frame</p>
+<p>  A frame has a start boundary and an optional end boundary:</p>
+<ul>
+<li>Frame Type<ul>
+<li>ROW</li>
+<li>RANGE</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Frame boundary</p>
+</li>
+<li><p>Effective window frames</p>
+</li>
+<li><p>Source name for window definition</p>
+</li>
+<li><p>LEAD</p>
+<blockquote>
+<p>The LEAD function is used to return the data from the next set of rows.</p>
+</blockquote>
+</li>
+<li><p>LAG</p>
+<blockquote>
+<p>The LAG function is used to return the data from the previous set of rows.</p>
+</blockquote>
+</li>
+<li><p>FIRST_VALUE</p>
+</li>
+<li><p>LAST_VALUE</p>
+</li>
+</ul>
+<h2 id="File-formats"><a href="#File-formats" class="headerlink" title="File formats"></a>File formats</h2><ul>
+<li><p>TEXTFILE, default format</p>
+</li>
+<li><p>SEQUENCEFILE</p>
+<p>  If you want to save disk storage while keeping large datasets</p>
+</li>
+<li><p>RCFILE</p>
+<p>  Also known as <strong>Record Columnar File</strong>, stores data in a compressed format on the disk. It provides the following features of storage and processing optimization:</p>
+<ul>
+<li>Fast storage of data</li>
+<li>Optimized storage utilization</li>
+<li>Better query processing</li>
+</ul>
+<p>  The RCFILE format flattens the data in terms of both rows and columns. If you need a certain column for analytics, it would not scan the complete data; instead, it would return the required columns.</p>
+</li>
+<li><p>ORC</p>
+<p>  <strong>Optimized Row Columnar</strong></p>
+<p>  This is a highly efficient way of storing and processing data in Hive. Data stored in the ORC format improves performance in reading, writing, and processing data with Hive.</p>
+</li>
+<li><p>PARQUET</p>
+<p>  This is a column-oriented storage format that is efficient at querying particular columns in the table.</p>
+</li>
+<li><p>AVRO</p>
+</li>
+</ul>
+<h1 id="Joins-and-Join-Optimization"><a href="#Joins-and-Join-Optimization" class="headerlink" title="Joins and Join Optimization"></a>Joins and Join Optimization</h1><h2 id="Using-a-skew-join"><a href="#Using-a-skew-join" class="headerlink" title="Using a skew join"></a>Using a skew join</h2><p>A skew join is used when there is a table with skew data in the joining column. A skew table is a table that is having values that are present in large numbers in the table compared to other data. Skew data is stored in a separate file while the rest of the data is stored in a separate file. </p>
+<p>If there is a need to perform a join on a column of a table that is appearing quite often in the table, the data for that particular column will go to a single reducer, which will become a bottleneck while performing the join. To reduce this, a skew join is used.</p>
+<h1 id="Statics-in-Hive"><a href="#Statics-in-Hive" class="headerlink" title="Statics in Hive"></a>Statics in Hive</h1><h2 id="Analyze"><a href="#Analyze" class="headerlink" title="Analyze"></a>Analyze</h2><pre><code>ANALYZE TABLE sales COMPUTE STATISTICS;
+</code></pre>
+<h1 id="Functions-in-Hive"><a href="#Functions-in-Hive" class="headerlink" title="Functions in Hive"></a>Functions in Hive</h1><h1 id="Hive-Tuning"><a href="#Hive-Tuning" class="headerlink" title="Hive Tuning"></a>Hive Tuning</h1><h2 id="Enabling-predicate-pushdown-optimiztions-in-Hive"><a href="#Enabling-predicate-pushdown-optimiztions-in-Hive" class="headerlink" title="Enabling predicate pushdown optimiztions in Hive"></a>Enabling predicate pushdown optimiztions in Hive</h2><p>Predicate pushdown is a traditional RDBMS term, whereas in Hive, it works as predicate pushup.</p>
+<p><code>hvie.optimize.ppd=true;</code></p>
+<h2 id="Optimizations-to-reduce-the-number-of-map"><a href="#Optimizations-to-reduce-the-number-of-map" class="headerlink" title="Optimizations to reduce the number of map"></a>Optimizations to reduce the number of map</h2><h2 id="Sampling"><a href="#Sampling" class="headerlink" title="Sampling"></a>Sampling</h2><blockquote>
+<p>Sampling in Hive is a way to wirte queries on a small chunk of data instead of the entire table.</p>
+</blockquote>
+<h1 id="Hive-Security"><a href="#Hive-Security" class="headerlink" title="Hive Security"></a>Hive Security</h1><h1 id="Hive-Integration-with-Other-Frameworks"><a href="#Hive-Integration-with-Other-Frameworks" class="headerlink" title="Hive Integration with Other Frameworks"></a>Hive Integration with Other Frameworks</h1><h2 id="Working-with-Apache-Spark"><a href="#Working-with-Apache-Spark" class="headerlink" title="Working with Apache Spark"></a>Working with Apache Spark</h2><h2 id="Working-with-Accumulo"><a href="#Working-with-Accumulo" class="headerlink" title="Working with Accumulo"></a>Working with Accumulo</h2><h2 id="Working-with-HBase-Google-Drill"><a href="#Working-with-HBase-Google-Drill" class="headerlink" title="Working with HBase (Google Drill)"></a>Working with HBase (Google Drill)</h2>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Hive/" rel="tag"># Hive</a>
+              <a href="/tags/Big-Data/" rel="tag"># Big Data</a>
+              <a href="/tags/Note/" rel="tag"># Note</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/06/10/graphql/" rel="prev" title="GraphQL简介">
+      <i class="fa fa-chevron-left"></i> GraphQL简介
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/02/25/cap-with-base/" rel="next" title="CAP定理与BASE理论">
+      CAP定理与BASE理论 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Developing-Hive"><span class="nav-number">1.</span> <span class="nav-text">Developing Hive</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Deploying-Hive-Metastore"><span class="nav-number">1.1.</span> <span class="nav-text">Deploying Hive Metastore</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Services-in-Hive"><span class="nav-number">2.</span> <span class="nav-text">Services in Hive</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#HiveServer2"><span class="nav-number">2.1.</span> <span class="nav-text">HiveServer2</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HiveServer2-High-Availability"><span class="nav-number">2.2.</span> <span class="nav-text">HiveServer2 High Availability</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Hive-metastore-service"><span class="nav-number">2.3.</span> <span class="nav-text">Hive metastore service</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Hue"><span class="nav-number">2.4.</span> <span class="nav-text">Hue</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Understanding-the-Hive-Data-Model"><span class="nav-number">3.</span> <span class="nav-text">Understanding the Hive Data Model</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Intruduction"><span class="nav-number">3.1.</span> <span class="nav-text">Intruduction</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Partitioning"><span class="nav-number">3.2.</span> <span class="nav-text">Partitioning</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Bucketing"><span class="nav-number">3.3.</span> <span class="nav-text">Bucketing</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Hive-Data-Definition-Language-DDL"><span class="nav-number">4.</span> <span class="nav-text">Hive Data Definition Language(DDL)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Creating-tables"><span class="nav-number">4.1.</span> <span class="nav-text">Creating tables</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Creating-views"><span class="nav-number">4.2.</span> <span class="nav-text">Creating views</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HCatalog"><span class="nav-number">4.3.</span> <span class="nav-text">HCatalog</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#WebHCat"><span class="nav-number">4.4.</span> <span class="nav-text">WebHCat</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Hive-Data-Manipulation-Language-DML"><span class="nav-number">5.</span> <span class="nav-text">Hive Data Manipulation Language(DML)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Hive-Extensibility-Features"><span class="nav-number">6.</span> <span class="nav-text">Hive Extensibility Features</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Serialization-and-deserialization-formats-and-data-types"><span class="nav-number">6.1.</span> <span class="nav-text">Serialization and deserialization formats and data types</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Exploring-views"><span class="nav-number">6.2.</span> <span class="nav-text">Exploring views</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Exploring-indexes"><span class="nav-number">6.3.</span> <span class="nav-text">Exploring indexes</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Hive-partitioning"><span class="nav-number">6.4.</span> <span class="nav-text">Hive partitioning</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Creating-buckets-in-Hive"><span class="nav-number">6.5.</span> <span class="nav-text">Creating buckets in Hive</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Analytics-functions-in-Hive"><span class="nav-number">6.6.</span> <span class="nav-text">Analytics functions in Hive</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Windowing-in-Hive"><span class="nav-number">6.7.</span> <span class="nav-text">Windowing in Hive</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#File-formats"><span class="nav-number">6.8.</span> <span class="nav-text">File formats</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Joins-and-Join-Optimization"><span class="nav-number">7.</span> <span class="nav-text">Joins and Join Optimization</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Using-a-skew-join"><span class="nav-number">7.1.</span> <span class="nav-text">Using a skew join</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Statics-in-Hive"><span class="nav-number">8.</span> <span class="nav-text">Statics in Hive</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Analyze"><span class="nav-number">8.1.</span> <span class="nav-text">Analyze</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Functions-in-Hive"><span class="nav-number">9.</span> <span class="nav-text">Functions in Hive</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Hive-Tuning"><span class="nav-number">10.</span> <span class="nav-text">Hive Tuning</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Enabling-predicate-pushdown-optimiztions-in-Hive"><span class="nav-number">10.1.</span> <span class="nav-text">Enabling predicate pushdown optimiztions in Hive</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Optimizations-to-reduce-the-number-of-map"><span class="nav-number">10.2.</span> <span class="nav-text">Optimizations to reduce the number of map</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Sampling"><span class="nav-number">10.3.</span> <span class="nav-text">Sampling</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Hive-Security"><span class="nav-number">11.</span> <span class="nav-text">Hive Security</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Hive-Integration-with-Other-Frameworks"><span class="nav-number">12.</span> <span class="nav-text">Hive Integration with Other Frameworks</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Working-with-Apache-Spark"><span class="nav-number">12.1.</span> <span class="nav-text">Working with Apache Spark</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Working-with-Accumulo"><span class="nav-number">12.2.</span> <span class="nav-text">Working with Accumulo</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Working-with-HBase-Google-Drill"><span class="nav-number">12.3.</span> <span class="nav-text">Working with HBase (Google Drill)</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Jiezhi</p>
+  <div class="site-description" itemprop="description">努力地成为一个大牛</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">82</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">categories</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">101</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Jiezhi" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Jiezhi" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:Jiezhi.G+blog@gmail.com" title="E-Mail → mailto:Jiezhi.G+blog@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jiezhi</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

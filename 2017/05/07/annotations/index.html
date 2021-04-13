@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"jiezhi.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"apiKey":"778170cba39be8aded6d4bb919ee084f","indexName":"Jiezhi Blog","hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="注解有很多用途。 但是，在这里我们将讨论如何使用注解来改进我们的android编码。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用注解改进Android代码">
+<meta property="og:url" content="https://jiezhi.github.io/2017/05/07/annotations/index.html">
+<meta property="og:site_name" content="Jiezhi&#39;s Blog">
+<meta property="og:description" content="注解有很多用途。 但是，在这里我们将讨论如何使用注解来改进我们的android编码。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn-images-1.medium.com/max/800/1*gxjdLI-WsXSPWPvAyBAMaQ.png">
+<meta property="article:published_time" content="2017-05-07T20:38:31.000Z">
+<meta property="article:modified_time" content="2021-04-13T08:33:13.621Z">
+<meta property="article:author" content="Jiezhi">
+<meta property="article:tag" content="大数据">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn-images-1.medium.com/max/800/1*gxjdLI-WsXSPWPvAyBAMaQ.png">
+
+<link rel="canonical" href="https://jiezhi.github.io/2017/05/07/annotations/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-cn'
+  };
+</script>
+
+  <title>使用注解改进Android代码 | Jiezhi's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Jiezhi's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">好记性不如烂笔头</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags<span class="badge">101</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories<span class="badge">29</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives<span class="badge">82</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+    <link itemprop="mainEntityOfPage" href="https://jiezhi.github.io/2017/05/07/annotations/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Jiezhi">
+      <meta itemprop="description" content="努力地成为一个大牛">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Jiezhi's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          使用注解改进Android代码
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2017-05-07 20:38:31" itemprop="dateCreated datePublished" datetime="2017-05-07T20:38:31+00:00">2017-05-07</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-04-13 08:33:13" itemprop="dateModified" datetime="2021-04-13T08:33:13+00:00">2021-04-13</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>注解有很多用途。 但是，在这里我们将讨论如何使用注解来改进我们的android编码。</p>
+<span id="more"></span>
+<p><img src="https://cdn-images-1.medium.com/max/800/1*gxjdLI-WsXSPWPvAyBAMaQ.png"></p>
+<h2 id="注解即元数据"><a href="#注解即元数据" class="headerlink" title="注解即元数据"></a>注解即元数据</h2><p>而元数据是提供有关其他数据的信息的一组数据。</p>
+<p>注解有很多用途。 但是，在这里我们将讨论如何使用注解来改进我们的android编码。</p>
+<p>官方Android已经提供了支持注解，你可以添加如下依赖关系来导入注解：</p>
+<blockquote>
+<p>compile ‘com.android.support:support-annotations:x.x.x’</p>
+</blockquote>
+<p>每个人都想成为一个好的程序员，每天我也在努力地提高自己。</p>
+<blockquote>
+<p>任何人都可以编写计算机可以理解的代码，而好的程序员编写人可以理解的代码。 - Martin Fowler</p>
+</blockquote>
+<h2 id="让我们一起探索下一些有用的注解"><a href="#让我们一起探索下一些有用的注解" class="headerlink" title="让我们一起探索下一些有用的注解"></a>让我们一起探索下一些有用的注解</h2><h3 id="空类型注解"><a href="#空类型注解" class="headerlink" title="空类型注解"></a>空类型注解</h3><p><strong>@Nullable</strong>和**@NonNull**注解用于检查给定的变量、参数甚至是返回值是否为空。</p>
+<p><strong>@Nullable</strong>：它表示一个变量、参数或返回值可以为空。</p>
+<p><strong>@NonNUll</strong>：它表示不能为空的变量、参数或返回值。</p>
+<p>例如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@NonNull</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> View <span class="title">getView</span><span class="params">(<span class="meta">@Nullable</span> String s1, <span class="meta">@NonNull</span> String s2)</span> </span>&#123;</span><br><span class="line">  <span class="comment">// s1 可以为空</span></span><br><span class="line">  <span class="comment">// s2 不可以为空</span></span><br><span class="line">  <span class="comment">// 该方法必须返回一个不为空的view</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>所以当我们尝试这样调用该方法时：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">View view = getView(<span class="string">&quot;Amit&quot;</span>, <span class="keyword">null</span>);</span><br></pre></td></tr></table></figure>
+
+<p>在代码检测期间，Android Studio会警告你s2的值不能为空。</p>
+<h2 id="资源注解"><a href="#资源注解" class="headerlink" title="资源注解"></a>资源注解</h2><p>我们都知道，Android对资源的引用（如drawable和string资源）都是传递int类型的，因此我们必须验证资源类型。假设代码中希望传入特定类型的资源（例如Drawables），这里可以传入引用类型的<strong>int</strong>值，但实际上却传入了另外类型的资源，例如R.string资源：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setText</span><span class="params">(<span class="meta">@StringRes</span> <span class="keyword">int</span> resId)</span> </span>&#123;</span><br><span class="line">  <span class="comment">// resId 必须为string类型的id</span></span><br><span class="line">  <span class="comment">// resId 不能为常规的int值</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>所以，当你像如下方式调用该方法时：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">textView.setText(<span class="number">56</span>);</span><br></pre></td></tr></table></figure>
+
+<p>在代码检测过程中，当传入非string资源的参数时，注解将会生成一个警告。</p>
+<h2 id="线程注解"><a href="#线程注解" class="headerlink" title="线程注解"></a>线程注解</h2><p>线程注解检查方法是否在其期望的线程被调用。</p>
+<p>支持的注解有：</p>
+<p><strong>@MainThread</strong><br><strong>@UiThread</strong><br><strong>@WorkerThread</strong><br><strong>@BinderThread</strong><br><strong>@AnyThread</strong></p>
+<p>如果你添加如下的注解：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@WorkerThread</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doSomething</span><span class="params">()</span></span>&#123;</span><br><span class="line">  <span class="comment">// 该方法一定要从worker线程调用</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果你从非worker线程调用该方法时，你将会得到一个警告。</p>
+<h2 id="值限定注解"><a href="#值限定注解" class="headerlink" title="值限定注解"></a>值限定注解</h2><p>有时候，我们必须对参数做一些约束，所以使用**@IntRange<strong>，</strong>@FloatRange<strong>和</strong>@Size**注解来验证传入参数的值。</p>
+<p>当调用该方法的人可能会传递错误的值（超出指定的范围）时，该注解是非常有用的。</p>
+<p>在下面的例子中，@IntRange注解确保传递的整数值必须在0到255之间。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setAlpha</span><span class="params">(<span class="meta">@IntRange(from=0,to=255)</span> <span class="keyword">int</span> alpha)</span> </span>&#123;&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="权限注解"><a href="#权限注解" class="headerlink" title="权限注解"></a>权限注解</h2><p>使用**@RequiresPermission**注解来验证调用者的权限。</p>
+<p>以下示例注解<strong>setWallpaper()<strong>方法来确保方法的调用者具有</strong>permission.SET_WALLPAPERS</strong>权限：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequiresPermission(Manifest.permission.SET_WALLPAPER)</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">setWallpaper</span><span class="params">(Bitmap bitmap)</span> <span class="keyword">throws</span> IOException</span>;</span><br></pre></td></tr></table></figure>
+
+<p>如果在调用该方法时没有在manifest文件中添加需要的权限，代码检测器将会给你一个警告。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2017/03/30/android-arraymap-vs-sparsearray/" rel="prev" title="android中的ArrayMap和SparseArray">
+      <i class="fa fa-chevron-left"></i> android中的ArrayMap和SparseArray
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2017/10/18/gradle-in-android/" rel="next" title="Android中app.build配置">
+      Android中app.build配置 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B3%A8%E8%A7%A3%E5%8D%B3%E5%85%83%E6%95%B0%E6%8D%AE"><span class="nav-number">1.</span> <span class="nav-text">注解即元数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%A9%E6%88%91%E4%BB%AC%E4%B8%80%E8%B5%B7%E6%8E%A2%E7%B4%A2%E4%B8%8B%E4%B8%80%E4%BA%9B%E6%9C%89%E7%94%A8%E7%9A%84%E6%B3%A8%E8%A7%A3"><span class="nav-number">2.</span> <span class="nav-text">让我们一起探索下一些有用的注解</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A9%BA%E7%B1%BB%E5%9E%8B%E6%B3%A8%E8%A7%A3"><span class="nav-number">2.1.</span> <span class="nav-text">空类型注解</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B5%84%E6%BA%90%E6%B3%A8%E8%A7%A3"><span class="nav-number">3.</span> <span class="nav-text">资源注解</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BA%BF%E7%A8%8B%E6%B3%A8%E8%A7%A3"><span class="nav-number">4.</span> <span class="nav-text">线程注解</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%80%BC%E9%99%90%E5%AE%9A%E6%B3%A8%E8%A7%A3"><span class="nav-number">5.</span> <span class="nav-text">值限定注解</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9D%83%E9%99%90%E6%B3%A8%E8%A7%A3"><span class="nav-number">6.</span> <span class="nav-text">权限注解</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Jiezhi</p>
+  <div class="site-description" itemprop="description">努力地成为一个大牛</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">82</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">categories</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">101</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Jiezhi" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Jiezhi" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:Jiezhi.G+blog@gmail.com" title="E-Mail → mailto:Jiezhi.G+blog@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jiezhi</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
