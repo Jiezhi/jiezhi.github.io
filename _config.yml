@@ -123,7 +123,13 @@ algolia:
     - title
 
 feed:
+    enable: true
     type: atom
     path: atom.xml
     limit: 20
+    content: false
+    content_limit: 140
+    content_limit_delim: ' '
+    icon: icon.png
+    order_by: -date
 
