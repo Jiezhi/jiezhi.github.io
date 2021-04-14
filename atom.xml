@@ -1,0 +1,468 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Jiezhi&#39;s Blog</title>
+  <icon>https://jiezhi.github.io/icon.png</icon>
+  <subtitle>好记性不如烂笔头</subtitle>
+  <link href="https://jiezhi.github.io/atom.xml" rel="self"/>
+  
+  <link href="https://jiezhi.github.io/"/>
+  <updated>2021-04-14T03:52:34.667Z</updated>
+  <id>https://jiezhi.github.io/</id>
+  
+  <author>
+    <name>Jiezhi</name>
+    
+  </author>
+  
+  <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>海豚调度器告警优化</title>
+    <link href="https://jiezhi.github.io/2021/04/13/ds-alert/"/>
+    <id>https://jiezhi.github.io/2021/04/13/ds-alert/</id>
+    <published>2021-04-13T15:42:56.000Z</published>
+    <updated>2021-04-14T03:52:34.667Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;目前海豚调度器(1.3.6)的告警只支持邮件和短信，对于大部分在夜间执行的任务来说，很难做到在任务出错时及时通知到相应人员。&lt;br&gt;所以基于当前的代码做了一些优化。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="BigData" scheme="https://jiezhi.github.io/categories/BigData/"/>
+    
+    
+    <category term="海豚调度器" scheme="https://jiezhi.github.io/tags/%E6%B5%B7%E8%B1%9A%E8%B0%83%E5%BA%A6%E5%99%A8/"/>
+    
+    <category term="DolphinScheduler" scheme="https://jiezhi.github.io/tags/DolphinScheduler/"/>
+    
+    <category term="Alert" scheme="https://jiezhi.github.io/tags/Alert/"/>
+    
+    <category term="告警" scheme="https://jiezhi.github.io/tags/%E5%91%8A%E8%AD%A6/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>CDH 元数据库迁移之 Hue</title>
+    <link href="https://jiezhi.github.io/2021/03/05/cdh-hue-db-migration/"/>
+    <id>https://jiezhi.github.io/2021/03/05/cdh-hue-db-migration/</id>
+    <published>2021-03-05T16:48:11.000Z</published>
+    <updated>2021-04-14T03:52:34.659Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;最近把 CDH 整个集群都迁移了，大部分都没啥太大问题，跟着官方文档操作就行了。&lt;/p&gt;
+&lt;p&gt;Hue 这个数据库中外键依赖太多，得来点sao操作。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="BigData" scheme="https://jiezhi.github.io/categories/BigData/"/>
+    
+    
+    <category term="CDH" scheme="https://jiezhi.github.io/tags/CDH/"/>
+    
+    <category term="BigData" scheme="https://jiezhi.github.io/tags/BigData/"/>
+    
+    <category term="Hue" scheme="https://jiezhi.github.io/tags/Hue/"/>
+    
+    <category term="Migration" scheme="https://jiezhi.github.io/tags/Migration/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>2020年度 Python 库 Top10库之1-Typer</title>
+    <link href="https://jiezhi.github.io/2021/01/24/py-2020-top10lib-01-typer/"/>
+    <id>https://jiezhi.github.io/2021/01/24/py-2020-top10lib-01-typer/</id>
+    <published>2021-01-24T12:58:31.000Z</published>
+    <updated>2021-04-14T03:52:34.679Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;Typer 是一个人见人爱，花见花开的用于构建 CLI 程序的库，基于 Python 3.6+的类型提示（type hints）。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="default" scheme="https://jiezhi.github.io/categories/default/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>mongo-on-hive</title>
+    <link href="https://jiezhi.github.io/2020/08/28/mongo-on-hive/"/>
+    <id>https://jiezhi.github.io/2020/08/28/mongo-on-hive/</id>
+    <published>2020-08-28T17:00:18.000Z</published>
+    <updated>2021-04-14T03:52:34.675Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;Mongo 问题记录。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="default" scheme="https://jiezhi.github.io/categories/default/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>Atlas升级2.1.0出错修复（CDH 6.3.1）</title>
+    <link href="https://jiezhi.github.io/2020/08/18/atlas2-hive-hook-error/"/>
+    <id>https://jiezhi.github.io/2020/08/18/atlas2-hive-hook-error/</id>
+    <published>2020-08-18T11:40:40.000Z</published>
+    <updated>2021-04-14T03:52:34.659Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;经验告诉我们，生产最好不要随便升级。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="BigData" scheme="https://jiezhi.github.io/categories/BigData/"/>
+    
+    
+    <category term="CDH" scheme="https://jiezhi.github.io/tags/CDH/"/>
+    
+    <category term="Atlas" scheme="https://jiezhi.github.io/tags/Atlas/"/>
+    
+    <category term="BigData" scheme="https://jiezhi.github.io/tags/BigData/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>CDH 中 Flume 配置及拦截器的实现</title>
+    <link href="https://jiezhi.github.io/2020/06/03/cdh-flume-custom-interceptor/"/>
+    <id>https://jiezhi.github.io/2020/06/03/cdh-flume-custom-interceptor/</id>
+    <published>2020-06-03T17:05:34.000Z</published>
+    <updated>2021-04-14T03:52:34.659Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;记录配置 Flume 以及自定义 Flume 拦截器（Interceptor）的过程。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="BigData" scheme="https://jiezhi.github.io/categories/BigData/"/>
+    
+    
+    <category term="BigData" scheme="https://jiezhi.github.io/tags/BigData/"/>
+    
+    <category term="Flume" scheme="https://jiezhi.github.io/tags/Flume/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>CDH6配置 Atlas，及 Hive Hook</title>
+    <link href="https://jiezhi.github.io/2020/03/31/atlas2-cdh6-hive-hook/"/>
+    <id>https://jiezhi.github.io/2020/03/31/atlas2-cdh6-hive-hook/</id>
+    <published>2020-03-31T15:03:57.000Z</published>
+    <updated>2021-04-14T03:52:34.659Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;因为 CDH 社区版不能使用 &lt;a href=&quot;https://docs.cloudera.com/documentation/enterprise/6/6.3/topics/datamgmt_intro.html#intro_to_cloudera_navigator_data_mgmt&quot;&gt;Navigator&lt;/a&gt;，所以需要自己集成一个&lt;a href=&quot;https://docs.cloudera.com/documentation/enterprise/6/6.3/topics/datamgmt_intro.html#intro_to_cloudera_navigator_data_mgmt&quot;&gt;Apache Atlas&lt;/a&gt;。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="BigData" scheme="https://jiezhi.github.io/categories/BigData/"/>
+    
+    
+    <category term="Hive" scheme="https://jiezhi.github.io/tags/Hive/"/>
+    
+    <category term="CDH" scheme="https://jiezhi.github.io/tags/CDH/"/>
+    
+    <category term="Atlas" scheme="https://jiezhi.github.io/tags/Atlas/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>CDH中sqoop无法在 hue 中正确执行的问题</title>
+    <link href="https://jiezhi.github.io/2020/01/17/run-sqoop-with-oozie-in-hue/"/>
+    <id>https://jiezhi.github.io/2020/01/17/run-sqoop-with-oozie-in-hue/</id>
+    <published>2020-01-17T17:38:36.000Z</published>
+    <updated>2021-04-14T03:52:34.679Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;JDBC的配置给你带来多少的麻烦？&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="BigData" scheme="https://jiezhi.github.io/categories/BigData/"/>
+    
+    
+    <category term="CDH" scheme="https://jiezhi.github.io/tags/CDH/"/>
+    
+    <category term="Hue" scheme="https://jiezhi.github.io/tags/Hue/"/>
+    
+    <category term="Sqoop" scheme="https://jiezhi.github.io/tags/Sqoop/"/>
+    
+    <category term="Ooozie" scheme="https://jiezhi.github.io/tags/Ooozie/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Supervisord介绍与使用</title>
+    <link href="https://jiezhi.github.io/2020/01/16/supervisord/"/>
+    <id>https://jiezhi.github.io/2020/01/16/supervisord/</id>
+    <published>2020-01-16T15:19:46.000Z</published>
+    <updated>2021-04-14T03:52:34.679Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;有时候我们希望有些进程能时刻运行，并能在出错后自动重启。除了用系统带的 systemd 之外，你还可以用supervisord。&lt;br&gt;这里简单介绍 supervisord 的安装和使用。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="Linux" scheme="https://jiezhi.github.io/categories/Linux/"/>
+    
+    
+    <category term="tools" scheme="https://jiezhi.github.io/tags/tools/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>sqoop 常见问题</title>
+    <link href="https://jiezhi.github.io/2019/12/12/sqoop-issues/"/>
+    <id>https://jiezhi.github.io/2019/12/12/sqoop-issues/</id>
+    <published>2019-12-12T10:48:05.000Z</published>
+    <updated>2021-04-14T03:52:34.679Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;记录 Sqoop 使用过程中常见问题及解决方案。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="BigData" scheme="https://jiezhi.github.io/categories/BigData/"/>
+    
+    
+    <category term="Hive" scheme="https://jiezhi.github.io/tags/Hive/"/>
+    
+    <category term="Sqoop" scheme="https://jiezhi.github.io/tags/Sqoop/"/>
+    
+    <category term="HDFS" scheme="https://jiezhi.github.io/tags/HDFS/"/>
+    
+    <category term="MySQ" scheme="https://jiezhi.github.io/tags/MySQ/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Sqoop 增量更新</title>
+    <link href="https://jiezhi.github.io/2019/09/05/sqoop-incremental/"/>
+    <id>https://jiezhi.github.io/2019/09/05/sqoop-incremental/</id>
+    <published>2019-09-05T10:18:58.000Z</published>
+    <updated>2021-04-14T03:52:34.679Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;span id=&quot;more&quot;&gt;&lt;/span&gt;
+
+&lt;p&gt;Sqoop 增量更新数据一般有两种方式：&lt;/p&gt;
+&lt;h2 id=&quot;append-模式&quot;&gt;&lt;a href=&quot;#append-模式&quot; class=&quot;headerlink&quot; title=&quot;append</summary>
+        
+      
+    
+    
+    
+    <category term="BigData" scheme="https://jiezhi.github.io/categories/BigData/"/>
+    
+    
+    <category term="Hive" scheme="https://jiezhi.github.io/tags/Hive/"/>
+    
+    <category term="MySQL" scheme="https://jiezhi.github.io/tags/MySQL/"/>
+    
+    <category term="Sqoop" scheme="https://jiezhi.github.io/tags/Sqoop/"/>
+    
+    <category term="HDFS" scheme="https://jiezhi.github.io/tags/HDFS/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>设置 idea 中的 Vim（同样适用于jetbrains 家其他产品）</title>
+    <link href="https://jiezhi.github.io/2019/08/30/set-vim-in-idea/"/>
+    <id>https://jiezhi.github.io/2019/08/30/set-vim-in-idea/</id>
+    <published>2019-08-30T09:33:38.000Z</published>
+    <updated>2021-04-14T03:52:34.679Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;之前每次启动 idea 或 pycharm 后都要单独设置下才开始工作，那么怎么才能像设置 vimrc 一样设置 idea 中的 vim 呢？&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="Tools" scheme="https://jiezhi.github.io/categories/Tools/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>通过 ssh 远程代理，访问远程资源</title>
+    <link href="https://jiezhi.github.io/2019/03/29/tunnel-server-socket-over-ssh/"/>
+    <id>https://jiezhi.github.io/2019/03/29/tunnel-server-socket-over-ssh/</id>
+    <published>2019-03-29T10:10:26.000Z</published>
+    <updated>2021-04-14T03:52:34.679Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;平时我们使用SSH大多用来，登录远程服务器来进行远程操作。&lt;/p&gt;
+&lt;p&gt;但是 SSH 强大的功能远远不止登录远程服务器，比如说我在服务器上部署了一个服务，但是端口号并没有对外开放怎么办？又或者生产环境的数据库本地无法连接，而只能通过线上环境连接怎么办？&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="Linux" scheme="https://jiezhi.github.io/categories/Linux/"/>
+    
+    
+    <category term="ssh" scheme="https://jiezhi.github.io/tags/ssh/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Flink 分布式运行时环境（Distributed Runtime Environment）</title>
+    <link href="https://jiezhi.github.io/2019/03/08/flink-distributed-runtime-environment/"/>
+    <id>https://jiezhi.github.io/2019/03/08/flink-distributed-runtime-environment/</id>
+    <published>2019-03-08T14:26:26.000Z</published>
+    <updated>2021-04-14T03:52:34.675Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;本篇文章介绍 Flink 的分布式运行时环境相关的概念。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="Flink" scheme="https://jiezhi.github.io/categories/Flink/"/>
+    
+    
+    <category term="Flink" scheme="https://jiezhi.github.io/tags/Flink/"/>
+    
+    <category term="Translate" scheme="https://jiezhi.github.io/tags/Translate/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>解决 macos systemuiserver 无响应的问题</title>
+    <link href="https://jiezhi.github.io/2019/03/07/macos-systemuiserver-not-responding/"/>
+    <id>https://jiezhi.github.io/2019/03/07/macos-systemuiserver-not-responding/</id>
+    <published>2019-03-07T09:28:50.000Z</published>
+    <updated>2021-04-14T03:52:34.675Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;把 MBP 升级到最新系统（10.14.3）后，发现休眠后再打开电脑，点击无线网或切换wifi 的时候，系统开始转菊花，系统设置也无响应了，去Activity Monitor 里会发现 &lt;strong&gt;systemuiserver not responding&lt;/strong&gt;，貌似除了重启别无他法。&lt;/p&gt;
+&lt;p&gt;当然除了重启，你只需要在命令行里执行一个命令就可以了。&lt;/p&gt;
+&lt;figure class=&quot;highlight bash&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;sudo &lt;span class=&quot;built_in&quot;&gt;kill&lt;/span&gt; -9 `ps aux | grep -v grep | grep /usr/libexec/airportd | awk &lt;span class=&quot;string&quot;&gt;&amp;#x27;&amp;#123;print $2&amp;#125;&amp;#x27;&lt;/span&gt;`&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;</summary>
+    
+    
+    
+    <category term="MacOS" scheme="https://jiezhi.github.io/categories/MacOS/"/>
+    
+    
+    <category term="Macos" scheme="https://jiezhi.github.io/tags/Macos/"/>
+    
+    <category term="Bug" scheme="https://jiezhi.github.io/tags/Bug/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Flink编程模型</title>
+    <link href="https://jiezhi.github.io/2019/03/04/flink-concepts-programming-model/"/>
+    <id>https://jiezhi.github.io/2019/03/04/flink-concepts-programming-model/</id>
+    <published>2019-03-04T10:16:57.000Z</published>
+    <updated>2021-04-14T03:52:34.671Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;Flink 的编程模型为数据流编程模型（Dataflow Programming Model），这里介绍编程模型里面的几个概念。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="Flink" scheme="https://jiezhi.github.io/categories/Flink/"/>
+    
+    
+    <category term="Apache" scheme="https://jiezhi.github.io/tags/Apache/"/>
+    
+    <category term="Flink" scheme="https://jiezhi.github.io/tags/Flink/"/>
+    
+    <category term="Big Data" scheme="https://jiezhi.github.io/tags/Big-Data/"/>
+    
+    <category term="Translate" scheme="https://jiezhi.github.io/tags/Translate/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>分享学习大数据相关笔记，并邀请您加入</title>
+    <link href="https://jiezhi.github.io/2019/02/26/join-bigdata-group/"/>
+    <id>https://jiezhi.github.io/2019/02/26/join-bigdata-group/</id>
+    <published>2019-02-26T14:25:51.000Z</published>
+    <updated>2021-04-14T03:52:34.675Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;用 Notion 有一段时间了，也积累了不少技术知识点和读书笔记。这里创建了『大数据』相关的&lt;br&gt; WORKSPACE，希望有志同道合的朋友一起加入，互相学习，共同进步。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="BigData" scheme="https://jiezhi.github.io/categories/BigData/"/>
+    
+    
+    <category term="Note" scheme="https://jiezhi.github.io/tags/Note/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>CAP定理与BASE理论</title>
+    <link href="https://jiezhi.github.io/2019/02/25/cap-with-base/"/>
+    <id>https://jiezhi.github.io/2019/02/25/cap-with-base/</id>
+    <published>2019-02-25T10:29:25.000Z</published>
+    <updated>2021-04-14T03:52:34.659Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;CAP: 是指 Consistency(一致性), Availability(可用性) 和 Partition Tolerance(可用性).&lt;br&gt;BASE: &lt;strong&gt;B&lt;/strong&gt;asically &lt;strong&gt;A&lt;/strong&gt;vailable（基本可用）, &lt;strong&gt;S&lt;/strong&gt;oft state（软状态）和 &lt;strong&gt;E&lt;/strong&gt;ventually consistent（最终一致性）&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="NoSQL" scheme="https://jiezhi.github.io/categories/NoSQL/"/>
+    
+    
+    <category term="NoSQL" scheme="https://jiezhi.github.io/tags/NoSQL/"/>
+    
+    <category term="CAP" scheme="https://jiezhi.github.io/tags/CAP/"/>
+    
+    <category term="BASE" scheme="https://jiezhi.github.io/tags/BASE/"/>
+    
+    <category term="ACID" scheme="https://jiezhi.github.io/tags/ACID/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>《Apache Hive Cookbook》读书笔记</title>
+    <link href="https://jiezhi.github.io/2019/02/19/note-hive-cookbook/"/>
+    <id>https://jiezhi.github.io/2019/02/19/note-hive-cookbook/</id>
+    <published>2019-02-19T17:26:42.000Z</published>
+    <updated>2021-04-14T03:52:34.679Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;有 SQL 基础的话，差不多一天可以看完。&lt;br&gt;这里把我看这本书做的笔记分享一下（从 &lt;a href=&quot;https://www.notion.so/?r=507f808e5cb544809dfe98d930ee2cae&quot;&gt;Notion&lt;/a&gt; 里迁移出来）&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="Hive" scheme="https://jiezhi.github.io/categories/Hive/"/>
+    
+    
+    <category term="Hive" scheme="https://jiezhi.github.io/tags/Hive/"/>
+    
+    <category term="Big Data" scheme="https://jiezhi.github.io/tags/Big-Data/"/>
+    
+    <category term="Note" scheme="https://jiezhi.github.io/tags/Note/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>GraphQL简介</title>
+    <link href="https://jiezhi.github.io/2018/06/10/graphql/"/>
+    <id>https://jiezhi.github.io/2018/06/10/graphql/</id>
+    <published>2018-06-10T15:02:51.000Z</published>
+    <updated>2021-04-14T03:52:34.675Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;GraphQL会是取代REST API的下一代标准么？&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="GraphQL" scheme="https://jiezhi.github.io/categories/GraphQL/"/>
+    
+    
+    <category term="Translate" scheme="https://jiezhi.github.io/tags/Translate/"/>
+    
+    <category term="GraphQL" scheme="https://jiezhi.github.io/tags/GraphQL/"/>
+    
+  </entry>
+  
+</feed>
