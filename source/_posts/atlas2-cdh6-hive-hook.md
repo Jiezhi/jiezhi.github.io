@@ -200,6 +200,11 @@ Atlas 依赖 Solr（或 ES）、HBase和 Kafka 来工作，先确保 CDH 这3个
 
 ## 导入历史数据
 
-如果需要历史数据，则可以通过 hook-bin下面的 import_hive.sh 导入即可，主要要把 atlas-application.properties 复制到 HIVE_CONF_HOME 下面（/etc/hive/conf）。
+如果需要历史数据，则可以通过 hook-bin下面的 import_hive.sh 导入即可。
+```bash
+export HIVE_HOME=/opt/cloudera/parcels/CDH/lib/hive/
+cp conf/atlas-application.properties /opt/cloudera/parcels/CDH/lib/hive/conf/
+./hook-bin/import-hive.sh
+```
 
 
