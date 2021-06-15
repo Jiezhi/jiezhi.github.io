@@ -20,7 +20,7 @@ photos:
 <!--more-->
 
 # 版本说明
-20200818 Updated: 目前最新版是2.1.0，如果 Hive 版本是3.1一下的，可能存在不兼容问题。
+20200818 Updated: 目前最新版是2.1.0，如果 Hive 版本是3.1以下的，可能存在不兼容问题。
 在编译前修改下源码，参考[这篇](/2020/08/18/atlas2-hive-hook-error/)。
 
 Atlas: 2.0 [Download](https://atlas.apache.org/#/Downloads)
