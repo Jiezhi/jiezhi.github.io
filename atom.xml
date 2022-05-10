@@ -6,7 +6,7 @@
   <link href="https://jiezhi.github.io/atom.xml" rel="self"/>
   
   <link href="https://jiezhi.github.io/"/>
-  <updated>2022-02-14T06:12:58.617Z</updated>
+  <updated>2022-05-10T09:55:51.208Z</updated>
   <id>https://jiezhi.github.io/</id>
   
   <author>
@@ -17,11 +17,36 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>Neo4j CDC 至 Kafka</title>
+    <link href="https://jiezhi.github.io/2022/05/10/neo4j-streams-to-kafka/"/>
+    <id>https://jiezhi.github.io/2022/05/10/neo4j-streams-to-kafka/</id>
+    <published>2022-05-10T16:58:19.000Z</published>
+    <updated>2022-05-10T09:55:51.208Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;本文介绍如何监听 Neo4j 变更数据并发送到 kafka 。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="BigData" scheme="https://jiezhi.github.io/categories/BigData/"/>
+    
+    
+    <category term="Neo4j" scheme="https://jiezhi.github.io/tags/Neo4j/"/>
+    
+    <category term="Kafka" scheme="https://jiezhi.github.io/tags/Kafka/"/>
+    
+    <category term="CDC" scheme="https://jiezhi.github.io/tags/CDC/"/>
+    
+    <category term="Stream" scheme="https://jiezhi.github.io/tags/Stream/"/>
+    
+  </entry>
+  
+  <entry>
     <title>HA模式下，YARN RM无法进入活动状态</title>
     <link href="https://jiezhi.github.io/2022/02/14/yarn-standby-cannot-active/"/>
     <id>https://jiezhi.github.io/2022/02/14/yarn-standby-cannot-active/</id>
     <published>2022-02-14T13:53:34.000Z</published>
-    <updated>2022-02-14T06:12:58.617Z</updated>
+    <updated>2022-05-10T09:55:51.208Z</updated>
     
     
     <summary type="html">&lt;p&gt;凌晨 YARN 异常，HA 模式下两个 RM（ResourceManager）都处于备用（standby）状态，重启其中任何一个都无法使另外的活动（active）状态。&lt;/p&gt;</summary>
@@ -44,7 +69,7 @@
     <link href="https://jiezhi.github.io/2021/11/18/flink-sql-connector-hive-with-cdh/"/>
     <id>https://jiezhi.github.io/2021/11/18/flink-sql-connector-hive-with-cdh/</id>
     <published>2021-11-18T18:35:26.000Z</published>
-    <updated>2022-02-14T06:12:58.617Z</updated>
+    <updated>2022-05-10T09:55:51.204Z</updated>
     
     
     <summary type="html">&lt;p&gt;解决&lt;code&gt;Unrecognized Hadoop major version number: 3.0.0-cdh6.3.1&lt;/code&gt;问题。&lt;/p&gt;</summary>
@@ -67,7 +92,7 @@
     <link href="https://jiezhi.github.io/2021/06/29/ranger-admin/"/>
     <id>https://jiezhi.github.io/2021/06/29/ranger-admin/</id>
     <published>2021-06-29T16:58:29.000Z</published>
-    <updated>2022-02-14T06:12:58.617Z</updated>
+    <updated>2022-05-10T09:55:51.208Z</updated>
     
     
     <summary type="html">&lt;p&gt;记录下配置历程。&lt;/p&gt;</summary>
@@ -88,7 +113,7 @@
     <link href="https://jiezhi.github.io/2021/04/13/ds-alert/"/>
     <id>https://jiezhi.github.io/2021/04/13/ds-alert/</id>
     <published>2021-04-13T15:42:56.000Z</published>
-    <updated>2022-02-14T06:12:58.605Z</updated>
+    <updated>2022-05-10T09:55:51.196Z</updated>
     
     
     <summary type="html">&lt;p&gt;目前海豚调度器(1.3.6)的告警只支持邮件和短信，对于大部分在夜间执行的任务来说，很难做到在任务出错时及时通知到相应人员。&lt;br&gt;所以基于当前的代码做了一些优化。&lt;/p&gt;</summary>
@@ -113,7 +138,7 @@
     <link href="https://jiezhi.github.io/2021/03/05/cdh-hue-db-migration/"/>
     <id>https://jiezhi.github.io/2021/03/05/cdh-hue-db-migration/</id>
     <published>2021-03-05T16:48:11.000Z</published>
-    <updated>2022-02-14T06:12:58.601Z</updated>
+    <updated>2022-05-10T09:55:51.188Z</updated>
     
     
     <summary type="html">&lt;p&gt;最近把 CDH 整个集群都迁移了，大部分都没啥太大问题，跟着官方文档操作就行了。&lt;/p&gt;
@@ -139,7 +164,7 @@
     <link href="https://jiezhi.github.io/2021/01/24/py-2020-top10lib-01-typer/"/>
     <id>https://jiezhi.github.io/2021/01/24/py-2020-top10lib-01-typer/</id>
     <published>2021-01-24T12:58:31.000Z</published>
-    <updated>2022-02-14T06:12:58.617Z</updated>
+    <updated>2022-05-10T09:55:51.208Z</updated>
     
     
     <summary type="html">&lt;p&gt;Typer 是一个人见人爱，花见花开的用于构建 CLI 程序的库，基于 Python 3.6+的类型提示（type hints）。&lt;/p&gt;</summary>
@@ -156,7 +181,7 @@
     <link href="https://jiezhi.github.io/2020/08/28/mongo-on-hive/"/>
     <id>https://jiezhi.github.io/2020/08/28/mongo-on-hive/</id>
     <published>2020-08-28T17:00:18.000Z</published>
-    <updated>2022-02-14T06:12:58.617Z</updated>
+    <updated>2022-05-10T09:55:51.208Z</updated>
     
     
     <summary type="html">&lt;p&gt;Mongo 问题记录。&lt;/p&gt;</summary>
@@ -173,7 +198,7 @@
     <link href="https://jiezhi.github.io/2020/08/18/atlas2-hive-hook-error/"/>
     <id>https://jiezhi.github.io/2020/08/18/atlas2-hive-hook-error/</id>
     <published>2020-08-18T11:40:40.000Z</published>
-    <updated>2022-02-14T06:12:58.597Z</updated>
+    <updated>2022-05-10T09:55:51.188Z</updated>
     
     
     <summary type="html">&lt;p&gt;经验告诉我们，生产最好不要随便升级。&lt;/p&gt;</summary>
@@ -196,7 +221,7 @@
     <link href="https://jiezhi.github.io/2020/06/03/cdh-flume-custom-interceptor/"/>
     <id>https://jiezhi.github.io/2020/06/03/cdh-flume-custom-interceptor/</id>
     <published>2020-06-03T17:05:34.000Z</published>
-    <updated>2022-02-14T06:12:58.597Z</updated>
+    <updated>2022-05-10T09:55:51.188Z</updated>
     
     
     <summary type="html">&lt;p&gt;记录配置 Flume 以及自定义 Flume 拦截器（Interceptor）的过程。&lt;/p&gt;</summary>
@@ -217,7 +242,7 @@
     <link href="https://jiezhi.github.io/2020/03/31/atlas2-cdh6-hive-hook/"/>
     <id>https://jiezhi.github.io/2020/03/31/atlas2-cdh6-hive-hook/</id>
     <published>2020-03-31T15:03:57.000Z</published>
-    <updated>2022-02-14T06:12:58.597Z</updated>
+    <updated>2022-05-10T09:55:51.188Z</updated>
     
     
     <summary type="html">&lt;p&gt;因为 CDH 社区版不能使用 &lt;a href=&quot;https://docs.cloudera.com/documentation/enterprise/6/6.3/topics/datamgmt_intro.html#intro_to_cloudera_navigator_data_mgmt&quot;&gt;Navigator&lt;/a&gt;，所以需要自己集成一个&lt;a href=&quot;https://docs.cloudera.com/documentation/enterprise/6/6.3/topics/datamgmt_intro.html#intro_to_cloudera_navigator_data_mgmt&quot;&gt;Apache Atlas&lt;/a&gt;。&lt;/p&gt;</summary>
@@ -240,7 +265,7 @@
     <link href="https://jiezhi.github.io/2020/01/17/run-sqoop-with-oozie-in-hue/"/>
     <id>https://jiezhi.github.io/2020/01/17/run-sqoop-with-oozie-in-hue/</id>
     <published>2020-01-17T17:38:36.000Z</published>
-    <updated>2022-02-14T06:12:58.617Z</updated>
+    <updated>2022-05-10T09:55:51.208Z</updated>
     
     
     <summary type="html">&lt;p&gt;JDBC的配置给你带来多少的麻烦？&lt;/p&gt;</summary>
@@ -265,7 +290,7 @@
     <link href="https://jiezhi.github.io/2020/01/16/supervisord/"/>
     <id>https://jiezhi.github.io/2020/01/16/supervisord/</id>
     <published>2020-01-16T15:19:46.000Z</published>
-    <updated>2022-02-14T06:12:58.617Z</updated>
+    <updated>2022-05-10T09:55:51.208Z</updated>
     
     
     <summary type="html">&lt;p&gt;有时候我们希望有些进程能时刻运行，并能在出错后自动重启。除了用系统带的 systemd 之外，你还可以用supervisord。&lt;br&gt;这里简单介绍 supervisord 的安装和使用。&lt;/p&gt;</summary>
@@ -284,7 +309,7 @@
     <link href="https://jiezhi.github.io/2019/12/12/sqoop-issues/"/>
     <id>https://jiezhi.github.io/2019/12/12/sqoop-issues/</id>
     <published>2019-12-12T10:48:05.000Z</published>
-    <updated>2022-02-14T06:12:58.617Z</updated>
+    <updated>2022-05-10T09:55:51.208Z</updated>
     
     
     <summary type="html">&lt;p&gt;记录 Sqoop 使用过程中常见问题及解决方案。&lt;/p&gt;</summary>
@@ -309,7 +334,7 @@
     <link href="https://jiezhi.github.io/2019/09/05/sqoop-incremental/"/>
     <id>https://jiezhi.github.io/2019/09/05/sqoop-incremental/</id>
     <published>2019-09-05T10:18:58.000Z</published>
-    <updated>2022-02-14T06:12:58.617Z</updated>
+    <updated>2022-05-10T09:55:51.208Z</updated>
     
     
       
@@ -343,7 +368,7 @@
     <link href="https://jiezhi.github.io/2019/08/30/set-vim-in-idea/"/>
     <id>https://jiezhi.github.io/2019/08/30/set-vim-in-idea/</id>
     <published>2019-08-30T09:33:38.000Z</published>
-    <updated>2022-02-14T06:12:58.617Z</updated>
+    <updated>2022-05-10T09:55:51.208Z</updated>
     
     
     <summary type="html">&lt;p&gt;之前每次启动 idea 或 pycharm 后都要单独设置下才开始工作，那么怎么才能像设置 vimrc 一样设置 idea 中的 vim 呢？&lt;/p&gt;</summary>
@@ -360,7 +385,7 @@
     <link href="https://jiezhi.github.io/2019/03/29/tunnel-server-socket-over-ssh/"/>
     <id>https://jiezhi.github.io/2019/03/29/tunnel-server-socket-over-ssh/</id>
     <published>2019-03-29T10:10:26.000Z</published>
-    <updated>2022-02-14T06:12:58.617Z</updated>
+    <updated>2022-05-10T09:55:51.208Z</updated>
     
     
     <summary type="html">&lt;p&gt;平时我们使用SSH大多用来，登录远程服务器来进行远程操作。&lt;/p&gt;
@@ -380,7 +405,7 @@
     <link href="https://jiezhi.github.io/2019/03/08/flink-distributed-runtime-environment/"/>
     <id>https://jiezhi.github.io/2019/03/08/flink-distributed-runtime-environment/</id>
     <published>2019-03-08T14:26:26.000Z</published>
-    <updated>2022-02-14T06:12:58.613Z</updated>
+    <updated>2022-05-10T09:55:51.204Z</updated>
     
     
     <summary type="html">&lt;p&gt;本篇文章介绍 Flink 的分布式运行时环境相关的概念。&lt;/p&gt;</summary>
@@ -401,7 +426,7 @@
     <link href="https://jiezhi.github.io/2019/03/07/macos-systemuiserver-not-responding/"/>
     <id>https://jiezhi.github.io/2019/03/07/macos-systemuiserver-not-responding/</id>
     <published>2019-03-07T09:28:50.000Z</published>
-    <updated>2022-02-14T06:12:58.617Z</updated>
+    <updated>2022-05-10T09:55:51.208Z</updated>
     
     
     <summary type="html">&lt;p&gt;把 MBP 升级到最新系统（10.14.3）后，发现休眠后再打开电脑，点击无线网或切换wifi 的时候，系统开始转菊花，系统设置也无响应了，去Activity Monitor 里会发现 &lt;strong&gt;systemuiserver not responding&lt;/strong&gt;，貌似除了重启别无他法。&lt;/p&gt;
@@ -424,7 +449,7 @@
     <link href="https://jiezhi.github.io/2019/03/04/flink-concepts-programming-model/"/>
     <id>https://jiezhi.github.io/2019/03/04/flink-concepts-programming-model/</id>
     <published>2019-03-04T10:16:57.000Z</published>
-    <updated>2022-02-14T06:12:58.613Z</updated>
+    <updated>2022-05-10T09:55:51.200Z</updated>
     
     
     <summary type="html">&lt;p&gt;Flink 的编程模型为数据流编程模型（Dataflow Programming Model），这里介绍编程模型里面的几个概念。&lt;/p&gt;</summary>
@@ -441,25 +466,6 @@
     <category term="Big Data" scheme="https://jiezhi.github.io/tags/Big-Data/"/>
     
     <category term="Translate" scheme="https://jiezhi.github.io/tags/Translate/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>分享学习大数据相关笔记，并邀请您加入</title>
-    <link href="https://jiezhi.github.io/2019/02/26/join-bigdata-group/"/>
-    <id>https://jiezhi.github.io/2019/02/26/join-bigdata-group/</id>
-    <published>2019-02-26T14:25:51.000Z</published>
-    <updated>2022-02-14T06:12:58.617Z</updated>
-    
-    
-    <summary type="html">&lt;p&gt;用 Notion 有一段时间了，也积累了不少技术知识点和读书笔记。这里创建了『大数据』相关的&lt;br&gt; WORKSPACE，希望有志同道合的朋友一起加入，互相学习，共同进步。&lt;/p&gt;</summary>
-    
-    
-    
-    <category term="BigData" scheme="https://jiezhi.github.io/categories/BigData/"/>
-    
-    
-    <category term="Note" scheme="https://jiezhi.github.io/tags/Note/"/>
     
   </entry>
   
