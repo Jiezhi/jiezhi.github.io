@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"jiezhi.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"algolia":{"apiKey":"778170cba39be8aded6d4bb919ee084f","indexName":"Jiezhi Blog","hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="本文介绍通过 Flink CDC 方式实时同步 MySQL 数据至 Hudi（或 Hive）的过程。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Flink CDC 同步数据至 Hudi">
+<meta property="og:url" content="https://jiezhi.github.io/2022/06/24/flink-cdc-to-hudi/index.html">
+<meta property="og:site_name" content="Jiezhi&#39;s Blog">
+<meta property="og:description" content="本文介绍通过 Flink CDC 方式实时同步 MySQL 数据至 Hudi（或 Hive）的过程。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-06-24T13:55:24.000Z">
+<meta property="article:modified_time" content="2022-06-24T06:46:51.563Z">
+<meta property="article:author" content="Jiezhi">
+<meta property="article:tag" content="Flink">
+<meta property="article:tag" content="CDC">
+<meta property="article:tag" content="Hudi">
+<meta property="article:tag" content="Stream">
+<meta property="article:tag" content="Datalake">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://jiezhi.github.io/2022/06/24/flink-cdc-to-hudi/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-cn'
+  };
+</script>
+
+  <title>Flink CDC 同步数据至 Hudi | Jiezhi's Blog</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-67636901-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-67636901-1');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="Jiezhi's Blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Jiezhi's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">好记性不如烂笔头</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags<span class="badge">110</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories<span class="badge">29</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives<span class="badge">87</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/jiezhi" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+    <link itemprop="mainEntityOfPage" href="https://jiezhi.github.io/2022/06/24/flink-cdc-to-hudi/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Jiezhi">
+      <meta itemprop="description" content="努力地成为一个大牛">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Jiezhi's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Flink CDC 同步数据至 Hudi<a href="https://github.com/Jiezhi/jiezhi.github.io/tree/source/source/_posts/flink-cdc-to-hudi.md" class="post-edit-link" title="Edit this post" rel="noopener" target="_blank"><i class="fa fa-pencil-alt"></i></a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2022-06-24 13:55:24 / Modified: 06:46:51" itemprop="dateCreated datePublished" datetime="2022-06-24T13:55:24+00:00">2022-06-24</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/BigData/" itemprop="url" rel="index"><span itemprop="name">BigData</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Changyan: </span>
+    
+    
+      <a title="changyan" href="/2022/06/24/flink-cdc-to-hudi/#SOHUCS" itemprop="discussionUrl">
+        <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="2022/06/24/flink-cdc-to-hudi/" itemprop="commentCount"></span>
+      </a>
+    
+  </span>
+  
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2022/06/24/flink-cdc-to-hudi/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2022/06/24/flink-cdc-to-hudi/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>本文介绍通过 Flink CDC 方式实时同步 MySQL 数据至 Hudi（或 Hive）的过程。</p>
+<span id="more"></span>
+<h1 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h1><h2 id="软件环境"><a href="#软件环境" class="headerlink" title="软件环境"></a>软件环境</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://hudi.apache.org/releases/release-0.11.1">Apache Hudi 0.11.1</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/ververica/flink-cdc-connectors/releases">Flink CDC 2.2.1</a>，支持的数据库可见<a target="_blank" rel="noopener" href="https://ververica.github.io/flink-cdc-connectors/master/content/about.html">官方文档</a>。</li>
+<li><a target="_blank" rel="noopener" href="https://nightlies.apache.org/flink/flink-docs-release-1.14/">Apache Flink 1.14.4</a><br>(因为目前 Hudi 和 CDC 插件最高支持 Flink 1.14，所以这里取最高版本1.14.4)</li>
+</ul>
+<h2 id="数据库"><a href="#数据库" class="headerlink" title="数据库"></a>数据库</h2><ul>
+<li>MySQL 5.6<br>如果需要自己准备，可以使用 docker 创建一个<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker run -it --rm --name mysql -p 3306:3306</span><br><span class="line"> -e MYSQL_ROOT_PASSWORD=debezium -e MYSQL_USER=mysqluser</span><br><span class="line">  -e MYSQL_PASSWORD=mysqlpw debezium/example-mysql:1.6</span><br></pre></td></tr></table></figure></li>
+<li>Hive 2.2.1-cdh6.3.1</li>
+</ul>
+<h1 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h1><h2 id="MySQL"><a href="#MySQL" class="headerlink" title="MySQL"></a>MySQL</h2><p>单独创建一个可以读取 binlog 的用户：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">USER</span> <span class="string">&#x27;debezium&#x27;</span>@<span class="string">&#x27;%&#x27;</span> IDENTIFIED <span class="keyword">BY</span> <span class="string">&#x27;xxx&#x27;</span>;</span><br><span class="line"><span class="keyword">GRANT</span> <span class="keyword">SELECT</span>, RELOAD, <span class="keyword">SHOW</span> DATABASES, REPLICATION SLAVE, REPLICATION CLIENT <span class="keyword">ON</span> <span class="operator">*</span>.<span class="operator">*</span> <span class="keyword">TO</span> <span class="string">&#x27;debezium&#x27;</span> IDENTIFIED <span class="keyword">BY</span> <span class="string">&#x27;xxx&#x27;</span>;</span><br><span class="line">FLUSH PRIVILEGES;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Flink"><a href="#Flink" class="headerlink" title="Flink"></a>Flink</h2><p>主要是开启 checkpoint，以及运行在 YARN 的配置，修改的地方可参考：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="attr">jobmanager.rpc.address:</span> <span class="string">localhost</span></span><br><span class="line"><span class="attr">jobmanager.rpc.port:</span> <span class="number">6123</span></span><br><span class="line"></span><br><span class="line"><span class="attr">jobmanager.memory.process.size:</span> <span class="string">4g</span></span><br><span class="line"><span class="attr">taskmanager.memory.process.size:</span> <span class="string">16g</span></span><br><span class="line"><span class="attr">taskmanager.numberOfTaskSlots:</span> <span class="number">4</span></span><br><span class="line"><span class="attr">parallelism.default:</span> <span class="number">1</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="attr">execution.checkpointing.interval:</span> <span class="string">3min</span></span><br><span class="line"><span class="comment"># execution.checkpointing.externalized-checkpoint-retention: [DELETE_ON_CANCELLATION, RETAIN_ON_CANCELLATION]</span></span><br><span class="line"><span class="attr">execution.checkpointing.externalized-checkpoint-retention:</span> <span class="string">DELETE_ON_CANCELLATION</span></span><br><span class="line"><span class="attr">execution.checkpointing.max-concurrent-checkpoints:</span> <span class="number">1</span></span><br><span class="line"><span class="attr">execution.checkpointing.min-pause:</span> <span class="number">0</span></span><br><span class="line"><span class="attr">execution.checkpointing.mode:</span> <span class="string">EXACTLY_ONCE</span></span><br><span class="line"><span class="attr">execution.checkpointing.timeout:</span> <span class="string">20min</span></span><br><span class="line"><span class="attr">execution.checkpointing.tolerable-failed-checkpoints:</span> <span class="number">10</span></span><br><span class="line"><span class="comment"># execution.checkpointing.unaligned: false</span></span><br><span class="line"></span><br><span class="line"><span class="attr">execution.checkpointing.unaligned:</span> <span class="literal">true</span></span><br><span class="line"><span class="attr">state.backend:</span> <span class="string">rocksdb</span></span><br><span class="line"><span class="attr">state.backend.incremental:</span> <span class="literal">true</span></span><br><span class="line"><span class="attr">state.backend.rocksdb.localdir:</span> <span class="string">/data/flink/rocksdb,/data1/flink/rocksdb</span></span><br><span class="line"></span><br><span class="line"><span class="attr">state.checkpoints.dir:</span> <span class="string">hdfs://xxx:8020/flink/1_14_4/flink-checkpoints</span></span><br><span class="line"><span class="attr">state.savepoints.dir:</span> <span class="string">hdfs://xxx:8020/flink/1_14_4/flink-savepoints</span></span><br><span class="line"></span><br><span class="line"><span class="attr">execution.target:</span> <span class="string">yarn-per-job</span></span><br><span class="line"></span><br><span class="line"><span class="attr">jobmanager.execution.failover-strategy:</span> <span class="string">region</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="Flink-Catalog-配置"><a href="#Flink-Catalog-配置" class="headerlink" title="Flink Catalog 配置"></a>Flink Catalog 配置</h2><p>因为我是用 Flink sql-client 来执行的，所以配置如下：<br>init.sql</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> CATALOG HiveCatalog <span class="keyword">WITH</span> (</span><br><span class="line">  <span class="string">&#x27;type&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;hive&#x27;</span>,</span><br><span class="line">  <span class="string">&#x27;default-database&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;default&#x27;</span>,</span><br><span class="line">  <span class="string">&#x27;hive-conf-dir&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;/etc/hive/conf&#x27;</span></span><br><span class="line">);</span><br><span class="line"></span><br><span class="line">USE CATALOG HiveCatalog;</span><br></pre></td></tr></table></figure>
+
+<p>这样，启动 sql-client可以指定该配置文件，进入交互终端：<br><code>./bin/sql-client.sh -i conf/init.sql</code></p>
+<p>如果后面 CDC 流程保存为 sql 文件或，再通过<code>-f</code>指定执行即可：<br><code>./bin/sql-client.sh -i conf/init.sql -f sql/test.sql</code></p>
+<h1 id="执行-SQL-模板"><a href="#执行-SQL-模板" class="headerlink" title="执行 SQL 模板"></a>执行 SQL 模板</h1><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">set</span> yarn.application.name<span class="operator">=</span>FlinkCDC<span class="operator">-</span>yourappname;</span><br><span class="line"></span><br><span class="line"><span class="keyword">set</span> pipeline.name<span class="operator">=</span>FlinkCDC<span class="operator">-</span>pipelinename;</span><br><span class="line"></span><br><span class="line"><span class="keyword">set</span> yarn.application.queue<span class="operator">=</span>users.cdc;</span><br><span class="line"></span><br><span class="line"><span class="keyword">SET</span> execution.checkpointing.interval<span class="operator">=</span><span class="number">5</span>min;</span><br><span class="line"></span><br><span class="line"><span class="keyword">SET</span> parallelism.default <span class="operator">=</span> <span class="number">4</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">DROP</span> <span class="keyword">TABLE</span> IF <span class="keyword">EXISTS</span> test_flink;</span><br><span class="line"></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> IF <span class="keyword">NOT</span> <span class="keyword">EXISTS</span> `test_flink` (</span><br><span class="line">  `id` <span class="type">bigint</span>,</span><br><span class="line">  `db_id` STRING,</span><br><span class="line">    ...</span><br><span class="line">  `gmtupdated` STRING,</span><br><span class="line">  <span class="keyword">PRIMARY</span> KEY (id) <span class="keyword">NOT</span> ENFORCED</span><br><span class="line"> ) <span class="keyword">WITH</span> (</span><br><span class="line">   <span class="string">&#x27;connector&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;mysql-cdc&#x27;</span>,</span><br><span class="line">   <span class="string">&#x27;hostname&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;xxx.mysql.polardb.rds.aliyuncs.com&#x27;</span>,</span><br><span class="line">   <span class="string">&#x27;port&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;3306&#x27;</span>,</span><br><span class="line">   <span class="string">&#x27;username&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;debezium&#x27;</span>,</span><br><span class="line">   <span class="string">&#x27;password&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;xxx&#x27;</span>,</span><br><span class="line">   <span class="string">&#x27;server-id&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;5500-5508&#x27;</span>, <span class="comment">-- 默认为随机 id，但为了避免与其他任务冲突，最好指定，范围需大于 source 的并行度，即要大于 parallelism.default 的值</span></span><br><span class="line">   <span class="string">&#x27;server-time-zone&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;Asia/Shanghai&#x27;</span>,</span><br><span class="line">   <span class="string">&#x27;database-name&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;db_name&#x27;</span>,</span><br><span class="line">   <span class="string">&#x27;table-name&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;table&#x27;</span></span><br><span class="line"> );</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">DROP</span> <span class="keyword">TABLE</span> IF <span class="keyword">EXISTS</span> test_hudi;</span><br><span class="line"></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> IF <span class="keyword">NOT</span> <span class="keyword">EXISTS</span> `test_hudi` (</span><br><span class="line">  `id` <span class="type">bigint</span> <span class="keyword">PRIMARY</span> KEY,</span><br><span class="line">  ...</span><br><span class="line">  `db_id` STRING,</span><br><span class="line"> )  PARTITIONED <span class="keyword">BY</span> (`db_id`)</span><br><span class="line"><span class="keyword">WITH</span> (</span><br><span class="line">  <span class="string">&#x27;connector&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;hudi&#x27;</span>,</span><br><span class="line">  <span class="string">&#x27;write.operation&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;upsert&#x27;</span>,</span><br><span class="line">  <span class="string">&#x27;write.precombine&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;true&#x27;</span>,</span><br><span class="line">  <span class="string">&#x27;write.precombine.field&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;gmtupdated&#x27;</span>,</span><br><span class="line">  <span class="string">&#x27;read.streaming.enabled&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;true&#x27;</span>,</span><br><span class="line">  <span class="string">&#x27;write.rate.limit&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;8000&#x27;</span>, <span class="comment">-- 如果数据量较大，需要控制写入速度的话</span></span><br><span class="line">  <span class="string">&#x27;path&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;hdfs://xxx:8020/hudi/flink/xxx&#x27;</span>,</span><br><span class="line">  <span class="string">&#x27;hive_sync.enable&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;true&#x27;</span>,     <span class="comment">-- 同步至 Hive 库中</span></span><br><span class="line">  <span class="string">&#x27;hive_sync.mode&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;hms&#x27;</span>,         <span class="comment">-- Required. Setting hive sync mode to hms, default jdbc</span></span><br><span class="line">  <span class="string">&#x27;hive_sync.table&#x27;</span><span class="operator">=</span><span class="string">&#x27;xxx&#x27;</span>,                          <span class="comment">-- required, hive table name</span></span><br><span class="line">  <span class="string">&#x27;hive_sync.db&#x27;</span><span class="operator">=</span><span class="string">&#x27;ods&#x27;</span>,</span><br><span class="line">  <span class="string">&#x27;hive_sync.metastore.uris&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;thrift://xxx:9083&#x27;</span>, <span class="comment">--</span></span><br><span class="line">  <span class="string">&#x27;table.type&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;MERGE_ON_READ&#x27;</span> <span class="comment">-- this creates a MERGE_ON_READ table, by default is COPY_ON_WRITE</span></span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> xxx_hudi <span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> xxx_flink;</span><br></pre></td></tr></table></figure>
+
+<p>在任务运行后，Flink checkpoint 之后，可以看到 hive 指定的库中多了从 hudi 同步过来的表，COW 为一张，MOR 为两张。</p>
+<h2 id="Hive-读取"><a href="#Hive-读取" class="headerlink" title="Hive 读取"></a>Hive 读取</h2><p>Hive 直接读取 Hudi 同步过来的表，有可能会有重复数据。此时需要设置一下：</p>
+<p><code>set hive.input.format=org.apache.hudi.hadoop.hive.HoodieCombineHiveInputFormat;</code><br>或者</p>
+<p><code>set hive.input.format= org.apache.hadoop.hive.ql.io.HiveInputFormat;</code></p>
+<p>下面老版本 hudi 文档里提到的设置应该已经失效：<br><code>set hive.input.format=org.apache.hudi.hadoop.HoodieParquetInputFormat;</code></p>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    Donate
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.jpg" alt="Jiezhi Alipay">
+        <p>Alipay</p>
+      </div>
+
+  </div>
+</div>
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Jiezhi
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://jiezhi.github.io/2022/06/24/flink-cdc-to-hudi/" title="Flink CDC 同步数据至 Hudi">https://jiezhi.github.io/2022/06/24/flink-cdc-to-hudi/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+        
+
+  <div class="followme">
+    <p>Welcome to my other publishing channels</p>
+
+    <div class="social-list">
+
+        <div class="social-item">
+          <a target="_blank" class="social-link" href="https://telegram.me/Jiezhi">
+            <span class="icon">
+              <i class="fab fa-telegram"></i>
+            </span>
+
+            <span class="label">Telegram</span>
+          </a>
+        </div>
+
+        <div class="social-item">
+          <a target="_blank" class="social-link" href="/atom.xml">
+            <span class="icon">
+              <i class="fa fa-rss"></i>
+            </span>
+
+            <span class="label">RSS</span>
+          </a>
+        </div>
+    </div>
+  </div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Flink/" rel="tag"># Flink</a>
+              <a href="/tags/CDC/" rel="tag"># CDC</a>
+              <a href="/tags/Hudi/" rel="tag"># Hudi</a>
+              <a href="/tags/Stream/" rel="tag"># Stream</a>
+              <a href="/tags/Datalake/" rel="tag"># Datalake</a>
+          </div>
+
+        
+  <div class="post-widgets">
+    <div class="wp_rating">
+      <div id="wpac-rating"></div>
+    </div>
+  </div>
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/05/10/neo4j-streams-to-kafka/" rel="prev" title="Neo4j CDC 至 Kafka">
+      <i class="fa fa-chevron-left"></i> Neo4j CDC 至 Kafka
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+      <div class="tabs tabs-comment">
+        <ul class="nav-tabs">
+            <li class="tab"><a href="#comment-changyan">changyan</a></li>
+            <li class="tab"><a href="#comment-disqus">disqus</a></li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane changyan" id="comment-changyan">
+              
+  <div class="comments">
+    <div id="SOHUCS"></div>
+  </div>
+  
+            </div>
+            <div class="tab-pane disqus" id="comment-disqus">
+              
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+            </div>
+        </div>
+      </div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87"><span class="nav-number">1.</span> <span class="nav-text">环境准备</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BD%AF%E4%BB%B6%E7%8E%AF%E5%A2%83"><span class="nav-number">1.1.</span> <span class="nav-text">软件环境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="nav-number">1.2.</span> <span class="nav-text">数据库</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE"><span class="nav-number">2.</span> <span class="nav-text">配置</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#MySQL"><span class="nav-number">2.1.</span> <span class="nav-text">MySQL</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Flink"><span class="nav-number">2.2.</span> <span class="nav-text">Flink</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Flink-Catalog-%E9%85%8D%E7%BD%AE"><span class="nav-number">2.3.</span> <span class="nav-text">Flink Catalog 配置</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%89%A7%E8%A1%8C-SQL-%E6%A8%A1%E6%9D%BF"><span class="nav-number">3.</span> <span class="nav-text">执行 SQL 模板</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Hive-%E8%AF%BB%E5%8F%96"><span class="nav-number">3.1.</span> <span class="nav-text">Hive 读取</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Jiezhi</p>
+  <div class="site-description" itemprop="description">努力地成为一个大牛</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">87</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">110</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="sidebar-button motion-element">
+    <a onclick="Chatra('openChat', true);"><i class="fa fa-comment"></i>
+    Chat
+  </a>
+  </div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Jiezhi" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Jiezhi" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:Jiezhi.G+blog@gmail.com" title="E-Mail → mailto:Jiezhi.G+blog@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jiezhi</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+  <script>
+  if (CONFIG.page.isPost) {
+    wpac_init = window.wpac_init || [];
+    wpac_init.push({
+      widget: 'Rating',
+      id    : 30099,
+      el    : 'wpac-rating',
+      color : 'fc6423'
+    });
+    (function() {
+      if ('WIDGETPACK_LOADED' in window) return;
+      WIDGETPACK_LOADED = true;
+      var mc = document.createElement('script');
+      mc.type = 'text/javascript';
+      mc.async = true;
+      mc.src = '//embed.widgetpack.com/widget.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(mc, s.nextSibling);
+    })();
+  }
+  </script>
+
+
+
+  <script>
+    (function(d, w, c) {
+      w.ChatraID = 'GCiPZzBaHr3o5PGkv';
+      var s = d.createElement('script');
+      w[c] = w[c] || function() {
+        (w[c].q = w[c].q || []).push(arguments);
+      };
+      s.async = true;
+      s.src = 'https://call.chatra.io/chatra.js';
+      if (d.head) d.head.appendChild(s);
+    })(document, window, 'Chatra');
+  </script>
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  <script>
+  NexT.utils.loadComments(document.querySelector('#SOHUCS'), () => {
+    var appid = 'cysq6qFcK';
+    var conf = '093315534266dc554f953e94c4b00510';
+    var width = window.innerWidth || document.documentElement.clientWidth;
+    if (width < 960) {
+      window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>');
+    } else {
+      var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){window.changyan.api.config({appid:appid,conf:conf})});
+    }
+  });
+  </script>
+  <script src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script>
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://jiezhi.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://jiezhi.github.io/2022/06/24/flink-cdc-to-hudi/";
+    this.page.identifier = "2022/06/24/flink-cdc-to-hudi/";
+    this.page.title = "Flink CDC 同步数据至 Hudi";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://jiezhi.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>

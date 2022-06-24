@@ -29,7 +29,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://jiezhi.github.io/2019/03/29/tunnel-server-socket-over-ssh/datagrip_ssh.png">
 <meta property="article:published_time" content="2019-03-29T10:10:26.000Z">
-<meta property="article:modified_time" content="2022-05-10T09:55:51.208Z">
+<meta property="article:modified_time" content="2022-06-24T06:46:51.567Z">
 <meta property="article:author" content="Jiezhi">
 <meta property="article:tag" content="ssh">
 <meta name="twitter:card" content="summary">
@@ -133,7 +133,7 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags<span class="badge">108</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags<span class="badge">110</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
@@ -143,7 +143,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives<span class="badge">86</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives<span class="badge">87</span></a>
 
   </li>
   </ul>
@@ -206,7 +206,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-05-10 09:55:51" itemprop="dateModified" datetime="2022-05-10T09:55:51+00:00">2022-05-10</time>
+                <time title="Modified: 2022-06-24 06:46:51" itemprop="dateModified" datetime="2022-06-24T06:46:51+00:00">2022-06-24</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -269,7 +269,7 @@
 </li>
 <li><p>使用支持 SSH tunnel 的客户端来连接数据库，比如 <a target="_blank" rel="noopener" href="https://www.jetbrains.com/datagrip/">DataGrip</a></p>
 <img src="/2019/03/29/tunnel-server-socket-over-ssh/datagrip_ssh.png" class=""></li>
-<li><p>同样，使用 ssh 命令来建立通道，本地就可以访问了。<br>比如数据库地址为：192.168.100.100:3306，远程服务器为：<a href="mailto:&#x72;&#111;&#x6f;&#x74;&#x40;&#x31;&#x39;&#x32;&#46;&#x31;&#54;&#x38;&#46;&#x31;&#x30;&#46;&#50;&#x30;&#48;">&#x72;&#111;&#x6f;&#x74;&#x40;&#x31;&#x39;&#x32;&#46;&#x31;&#54;&#x38;&#46;&#x31;&#x30;&#46;&#50;&#x30;&#48;</a>，使用本地3307端口来映射（其他端口也行，我因为本地3306被用了，所以用3307了）<br><code>ssh -L 3307:192.168.100.100:3306 root@192.168.10.200</code></p>
+<li><p>同样，使用 ssh 命令来建立通道，本地就可以访问了。<br>比如数据库地址为：192.168.100.100:3306，远程服务器为：<a href="mailto:&#x72;&#111;&#x6f;&#116;&#x40;&#49;&#57;&#x32;&#46;&#x31;&#x36;&#56;&#46;&#x31;&#x30;&#46;&#50;&#48;&#48;">&#x72;&#111;&#x6f;&#116;&#x40;&#49;&#57;&#x32;&#46;&#x31;&#x36;&#56;&#46;&#x31;&#x30;&#46;&#50;&#48;&#48;</a>，使用本地3307端口来映射（其他端口也行，我因为本地3306被用了，所以用3307了）<br><code>ssh -L 3307:192.168.100.100:3306 root@192.168.10.200</code></p>
 </li>
 </ol>
 <p>执行过后，只需要连接 <code>localhost:3307</code> 就可以访问数据库了。</p>
@@ -465,7 +465,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">86</span>
+          <span class="site-state-item-count">87</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -478,7 +478,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">108</span>
+        <span class="site-state-item-count">110</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
